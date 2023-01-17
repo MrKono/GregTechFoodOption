@@ -37,48 +37,39 @@ public class GTFOConfig {
     public static GTFOMiscConfig gtfoMiscConfig = new GTFOMiscConfig();
 
     public static class GTFOChainsConfig {
-        @Config.Comment("Add Popcorn Chain?")
+/*        @Config.Comment("Add Popcorn Chain?")
         public boolean popcornChain = true;
 
         @Config.Comment("Add Mineral Water Chain?")
         public boolean mineralWaterChain = true;
 
         @Config.Comment("Add Purple Drink Chain? (Note: also adds Etirps and Apple Hard Candy as sideproducts.)")
-        public boolean purpleDrinkChain = true;
-
-        @Config.Comment("Add Potato processing?")
-        public boolean potatoProcessingChain = true;
-
-        @Config.Comment("Add Breads Chain?")
-        public boolean breadsChain = true;
+        public boolean purpleDrinkChain = true;*/
 
         @Config.Comment("Delete vanilla bread recipe?")
-        public boolean deleteBreadRecipe = true;
-
-        @Config.Comment("Add Alcohol Recipes?")
-        public boolean alcoholChain = true;
+        public boolean deleteBreadRecipe = false;
     }
 
     public static class GTFOVanillaOverridesConfig {
         @Config.Comment("Enable most GTFO Vanilla Overrides features, usually adding small chains to food items while removing normal recipes?")
-        public boolean vanillaOverrideChain = true;
+        public boolean vanillaOverrideChain = false;
 
         @Config.Comment("Make Baking Oven Recipes for Meats in the Vanilla Overrides chain (and delete normal furnace recipes for them), if the chain itself is enabled?")
-        public boolean useBakingOvenForMeats = true;
+        public boolean useBakingOvenForMeats = false;
 
         @Config.Comment("Replace manual paper recipe with one with a Rolling Pin?")
-        public boolean useRollingPinForPaper = true;
+        public boolean useRollingPinForPaper = false;
     }
 
     public static class GTFOAppleCoreConfig {
         @Config.Comment("Should AppleCore compatibility be turned on?")
-        public boolean appleCoreCompat = true;
+        public boolean appleCoreCompat = false;
 
         @Config.Comment("Should all foods not from GregTech Food Option have reduced hunger and saturation stats, to incentivize using the foods from GTFO?")
-        public boolean reduceForeignFoodStats = true;
+        public boolean reduceForeignFoodStats = false;
 
         @Config.Comment("Use the default GregTech Food Option food stats reduction (a logistic curve)?")
-        public boolean useDefaultForeignFoodStatsReduction = true;
+        public boolean useDefaultForeignFoodStatsReduction = false;
 
         @Config.Comment("If the above is false, you can set this to divide all vanilla food items by some value.")
         public int constantFoodStatsDivisor = 1;
@@ -102,7 +93,6 @@ public class GTFOConfig {
         public void setAllToFalse() {
             nuclearCompat = false;
             smoreChain = false;
-            addSmogus = false;
         }
     }
 
@@ -119,7 +109,6 @@ public class GTFOConfig {
         public void setAllToFalse() {
             actuallyCompat = false;
             disableCoffeeMaker = false;
-            coffeeChain = false;
         }
     }
 
@@ -200,13 +189,21 @@ public class GTFOConfig {
 
         @Config.Comment("Apply effects of Step Assist?")
         public boolean stepAssist = true;
+
+        @Config.Comment("Apply effects of Snow Golem Spawner?")
+        public boolean snowGolemSpawner = true;
+
     }
 
     public static class GTFOMiscConfig {
-        @Config.Comment("Allow for lemons and limes to drop from trees? Note: makes the early game *much* easier to deal with.")
-        public boolean dropLemonsAndLimes = true;
-
         @Config.Comment("Create methane centrifuging recipes for GTFO seeds?")
         public boolean centrifugeSeeds = true;
+
+        @Config.Comment("Greenhouse replacements for dirt (use block names like minecraft:dirt or blockstates like minecraft:dirt[snowy=true])")
+        @Config.RequiresMcRestart
+        public String[] greenhouseDirts = new String[0];
+
+        @Config.Comment("Add furnace recipes for each baking oven recipe?")
+        public boolean bakingOvenReplacement = false;
     }
 }

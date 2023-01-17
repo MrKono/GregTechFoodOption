@@ -6,8 +6,10 @@ import gregtech.api.util.GTUtility;
 import gregtech.common.metatileentities.MetaTileEntities;
 import gregtechfoodoption.GregTechFoodOption;
 import gregtechfoodoption.client.GTFOClientHandler;
+import gregtechfoodoption.machines.farmer.MetaTileEntityFarmer;
 import gregtechfoodoption.machines.multiblock.MetaTileEntityBakingOven;
 import gregtechfoodoption.machines.multiblock.MetaTileEntityElectricBakingOven;
+import gregtechfoodoption.machines.multiblock.MetaTileEntityGreenhouse;
 import gregtechfoodoption.machines.multiblock.MetaTileEntitySteamBakingOven;
 import gregtechfoodoption.recipe.GTFORecipeMaps;
 import net.minecraft.util.ResourceLocation;
@@ -17,17 +19,18 @@ import static gregtech.common.metatileentities.MetaTileEntities.*;
 /* Takes up IDs 8500 - 8599 */
 public class GTFOTileEntities {
     //public static MetaTileEntityBioReactor[] BIOREACTOR = new MetaTileEntityBioReactor[GTValues.V.length];
-    public static SimpleMachineMetaTileEntity[] SLICER = new SimpleMachineMetaTileEntity[GTValues.V.length];
-    public static SimpleMachineMetaTileEntity[] CUISINE_ASSEMBLER = new SimpleMachineMetaTileEntity[GTValues.V.length];
-    public static MetaTileEntityMicrowave[] MICROWAVE = new MetaTileEntityMicrowave[GTValues.V.length];
+    public static SimpleMachineMetaTileEntity[] SLICER = new SimpleMachineMetaTileEntity[GTValues.V.length - 1];
+    public static SimpleMachineMetaTileEntity[] CUISINE_ASSEMBLER = new SimpleMachineMetaTileEntity[GTValues.V.length - 1];
+    public static MetaTileEntityMicrowave[] MICROWAVE = new MetaTileEntityMicrowave[GTValues.V.length - 1];
 
     public static final MetaTileEntityMobAgeSorter[] MOB_AGE_SORTER = new MetaTileEntityMobAgeSorter[4];
     public static final MetaTileEntityMobExterminator[] MOB_EXTERMINATOR = new MetaTileEntityMobExterminator[4];
     public static final MetaTileEntityMobExtractor[] MOB_EXTRACTOR = new MetaTileEntityMobExtractor[GTValues.UV];
-
+    public static final MetaTileEntityFarmer[] FARMER = new MetaTileEntityFarmer[4];
     public static MetaTileEntityBakingOven BAKING_OVEN;
     public static MetaTileEntityElectricBakingOven ELECTRIC_BAKING_OVEN;
     public static MetaTileEntitySteamBakingOven STEAM_BAKING_OVEN;
+    public static MetaTileEntityGreenhouse GREENHOUSE;
 
 
     public static void init() {
@@ -53,12 +56,12 @@ public class GTFOTileEntities {
             MICROWAVE[9] = registerMetaTileEntity(8539, new MetaTileEntityMicrowave(location("microwave.uhv"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 9));
             MICROWAVE[10] = registerMetaTileEntity(8540, new MetaTileEntityMicrowave(location("microwave.uev"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 10));
             MICROWAVE[11] = registerMetaTileEntity(8541, new MetaTileEntityMicrowave(location("microwave.uiv"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 11));
-            MICROWAVE[12] = registerMetaTileEntity(8542, new MetaTileEntityMicrowave(location("microwave.umv"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 12));
-            MICROWAVE[13] = registerMetaTileEntity(8543, new MetaTileEntityMicrowave(location("microwave.uxv"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 13));
+            MICROWAVE[12] = registerMetaTileEntity(8542, new MetaTileEntityMicrowave(location("microwave.uxv"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 12));
+            MICROWAVE[13] = registerMetaTileEntity(8543, new MetaTileEntityMicrowave(location("microwave.opv"), GTFORecipeMaps.MICROWAVE_RECIPES, GTFOClientHandler.MICROWAVE_OVERLAY, 13));
         }
         BAKING_OVEN = registerMetaTileEntity(8516, new MetaTileEntityBakingOven(location("baking_oven")));
         ELECTRIC_BAKING_OVEN = registerMetaTileEntity(8517, new MetaTileEntityElectricBakingOven(location("electric_baking_oven")));
-        STEAM_BAKING_OVEN = registerMetaTileEntity(8544, new MetaTileEntitySteamBakingOven(location("steam_baking_oven"), GTFORecipeMaps.BAKING_OVEN_RECIPES, 10));
+        STEAM_BAKING_OVEN = registerMetaTileEntity(8544, new MetaTileEntitySteamBakingOven(location("steam_baking_oven"), GTFORecipeMaps.ELECTRIC_BAKING_OVEN_RECIPES, 10));
 
         // Mob Age Sorters, IDs 8545-8548
         MOB_AGE_SORTER[0] = registerMetaTileEntity(8545, new MetaTileEntityMobAgeSorter(location("mob_age_sorter.lv"), 1, 1));
@@ -75,12 +78,20 @@ public class GTFOTileEntities {
         // Mob Extractor, IDs 8553-8560
         for (int i = 0; i < MOB_EXTRACTOR.length; i++) {
             if (i > 4 && !getMidTier("mob_extractor")) continue;
-            if (i > 7 && !getHighTier("mob_extractor")) break;
 
             String voltageName = GTValues.VN[i + 1].toLowerCase();
             MOB_EXTRACTOR[i] = registerMetaTileEntity(8553 + i,
                     new MetaTileEntityMobExtractor(location(String.format("%s.%s", "mob_extractor", voltageName)), GTFORecipeMaps.MOB_EXTRACTOR_RECIPES, GTFOClientHandler.MOB_EXTRACTOR_OVERLAY, i + 1, false, GTUtility.largeTankSizeFunction));
         }
+
+        // Farmer, IDs 8561-8564
+        FARMER[0] = registerMetaTileEntity(8561, new MetaTileEntityFarmer(location("farmer.lv"), 1, 20));
+        FARMER[1] = registerMetaTileEntity(8562, new MetaTileEntityFarmer(location("farmer.mv"), 2, 10));
+        FARMER[2] = registerMetaTileEntity(8563, new MetaTileEntityFarmer(location("farmer.hv"), 3, 5));
+        FARMER[3] = registerMetaTileEntity(8564, new MetaTileEntityFarmer(location("farmer.ev"), 4, 2));
+
+        GREENHOUSE = registerMetaTileEntity(8565, new MetaTileEntityGreenhouse(location("greenhouse")));
+
     }
 
     private static ResourceLocation location(String name) {

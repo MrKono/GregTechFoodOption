@@ -1,5 +1,8 @@
 package gregtechfoodoption.integration;
 
+//import static gregicality.science.api.unification.materials.GCYSMaterials.Orichalcum;
+//import static gregicality.science.api.unification.materials.GCYSMaterials.SodiumChlorate;
+
 public class GTFOGAMaterialHandler {
 
     /* Will be added back at a later date, when Gregicality: Science comes out. TODO
@@ -130,6 +133,7 @@ public class GTFOGAMaterialHandler {
 
 */
     public static void onMaterialsInit() {
-
+        //SodiumChlorate.addFlags(DISABLE_DECOMPOSITION);
+        //Orichalcum.addFlags(GENERATE_DENSE);
     }
 }

@@ -3,15 +3,23 @@ package gregtechfoodoption.utils;
 import gregtech.api.GTValues;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.RecipeMaps;
+import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.util.RandomPotionEffect;
+import gregtechfoodoption.GTFOValues;
 import gregtechfoodoption.item.GTFOFoodStats;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,11 +168,11 @@ public class GTFOUtils {
     }
 
     public static List<Fluid> getOrganicOils() {
-        return Arrays.asList(FishOil.getFluid(), SeedOil.getFluid(), OliveOil.getFluid(1000).getFluid(), FryingOil.getFluid(1000).getFluid());
+        return Arrays.asList(FishOil.getFluid(), SeedOil.getFluid(), OliveOil.getFluid(), FryingOil.getFluid());
     }
 
     public static RecipeMap<?> chemicalDehydratorProxy() {
-        return RecipeMaps.CHEMICAL_RECIPES;
+        return Loader.isModLoaded(GTFOValues.MODID_GCYS) ? RecipeMap.getByName("dryer_recipes") : RecipeMaps.CHEMICAL_RECIPES;
     }
 
     public static RecipeMap<?> stellarForgeProxy() {
@@ -175,18 +183,22 @@ public class GTFOUtils {
     public static void addBakingOvenRecipes(ItemStack input, ItemStack output, int duration, int temperature, int fuelAmount) {
         BAKING_OVEN_RECIPES.recipeBuilder().duration(duration).temperature(temperature)
                 .inputs(input)
-                .input(gem, Charcoal, fuelAmount)
+                .input(OrePrefix.plank, Wood, fuelAmount * 2)
                 .outputs(output)
                 .buildAndRegister();
+        ItemStack inputx4 = input.copy();
+        inputx4.setCount(input.getCount() * 4);
+        ItemStack outputx4 = output.copy();
+        outputx4.setCount(output.getCount() * 4);
         BAKING_OVEN_RECIPES.recipeBuilder().duration(duration)
-                .inputs(input)
-                .input(gem, Coal, fuelAmount)
-                .outputs(output)
+                .inputs(inputx4)
+                .input(gem, Coal, Math.max(fuelAmount, 1))
+                .outputs(outputx4)
                 .buildAndRegister();
         BAKING_OVEN_RECIPES.recipeBuilder().duration(duration)
-                .inputs(input)
-                .input(gem, Coke, Math.max(fuelAmount / 2, 1))
-                .outputs(output)
+                .inputs(inputx4)
+                .input(gem, Charcoal, Math.max(fuelAmount, 1))
+                .outputs(outputx4)
                 .buildAndRegister();
     }
 
@@ -199,8 +211,37 @@ public class GTFOUtils {
         list.add(new TextComponentTranslation("gregtechfoodoption.tooltip.potion.header").getFormattedText());
         effects.forEach((effect) -> list.add(new TextComponentTranslation("gregtechfoodoption.tooltip.potion.each",
                 new TextComponentTranslation(effect.effect.getEffectName()).getFormattedText(),
-                new TextComponentTranslation("enchantment.level." + effect.effect.getAmplifier()),
+                new TextComponentTranslation("enchantment.level." + (effect.effect.getAmplifier() + 1)),
                 effect.effect.getDuration(),
                 100 - effect.chance).getFormattedText()));
+    }
+
+    public static int getFirstUnemptyItemSlot(IItemHandler handler, int startSlot) {
+        for (int i = startSlot; i < handler.getSlots(); i++) {
+            if (!handler.getStackInSlot(i).isEmpty())
+                return i;
+        }
+        for (int i = 0; i < startSlot; i++) {
+            if (!handler.getStackInSlot(i).isEmpty())
+                return i;
+        }
+        return 0;
+    }
+
+    public static Vec3d getScaledFacingVec(EnumFacing facing, double scale) {
+        Vec3i facingOrdinaryVec = facing.getDirectionVec();
+        return new Vec3d(facingOrdinaryVec.getX(), facingOrdinaryVec.getY(), facingOrdinaryVec.getZ()).scale(scale);
+    }
+
+    public static BlockPos.MutableBlockPos copy(BlockPos pos) {
+        return new BlockPos.MutableBlockPos(pos.toImmutable());
+    }
+
+    public static boolean isFull(IItemHandler handler) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (handler.getStackInSlot(i).getCount() != handler.getStackInSlot(i).getMaxStackSize())
+                return false;
+        }
+        return true;
     }
 }

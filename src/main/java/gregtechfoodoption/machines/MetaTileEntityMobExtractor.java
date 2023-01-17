@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class MetaTileEntityMobExtractor extends SimpleMachineMetaTileEntity {
-    EntityLivingBase attackableTarget;
+    private EntityLivingBase attackableTarget;
 
     public MetaTileEntityMobExtractor(ResourceLocation metaTileEntityId, RecipeMap<?> recipeMap, ICubeRenderer renderer, int tier, boolean hasFrontFacing,
                                       Function<Integer, Integer> tankScalingFunction) {
@@ -44,7 +44,7 @@ public class MetaTileEntityMobExtractor extends SimpleMachineMetaTileEntity {
     }
 
     protected boolean checkRecipe(@Nonnull Recipe recipe) {
-        ResourceLocation entityRequired = recipe.getProperty(MobOnTopProperty.getInstance(), EntityList.LIGHTNING_BOLT);
+        ResourceLocation entityRequired = recipe.getProperty(MobOnTopProperty.getInstance(), null);
         List<Entity> nearbyEntities = getEntitiesInProximity();
         for (Entity entity : nearbyEntities) {
             if (EntityList.isMatchingName(entity, entityRequired)) {

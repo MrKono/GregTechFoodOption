@@ -18,12 +18,12 @@ public class CheeseChain {
                 .outputs(BEEF_SLICE.getStackForm(9))
                 .notConsumable(SLICER_BLADE_STRIPES.getStackForm())
                 .buildAndRegister();
-        GTFOUtils.chemicalDehydratorProxy().recipeBuilder().EUt(8).duration(300)
+        CHEMICAL_RECIPES.recipeBuilder().EUt(8).duration(300)
                 .inputs(BEEF_SLICE.getStackForm(4))
                 .fluidInputs(SaltWater.getFluid(1000), AceticAcid.getFluid(100))
                 .fluidOutputs(CrudeRennetSolution.getFluid(500))
                 .buildAndRegister();
-        GTFOUtils.chemicalDehydratorProxy().recipeBuilder().EUt(30).duration(200)
+        CHEMICAL_RECIPES.recipeBuilder().EUt(30).duration(200)
                 .fluidInputs(CrudeRennetSolution.getFluid(1), Milk.getFluid(3000))
                 .outputs(CoagulatedMilkCurd.getItemStack())
                 .fluidOutputs(Whey.getFluid(600))
@@ -84,7 +84,7 @@ public class CheeseChain {
                 .buildAndRegister();
         BENDER_RECIPES.recipeBuilder().EUt(16).duration(400)
                 .inputs(SolidifiedMozzarellaCurd.getItemStack(5))
-                .circuitMeta(0)
+                .circuitMeta(1)
                 .outputs(MOZZARELLA_BALL.getStackForm())
                 .buildAndRegister();
         EXTRUDER_RECIPES.recipeBuilder().EUt(16).duration(400)
@@ -98,11 +98,15 @@ public class CheeseChain {
                 .buildAndRegister();
         FLUID_HEATER_RECIPES.recipeBuilder().EUt(30).duration(100)
                 .fluidInputs(WheySaltWaterMix.getFluid(1000))
-                .circuitMeta(0)
+                .circuitMeta(1)
                 .fluidOutputs(HeatedRicottaStarter.getFluid(1000))
                 .buildAndRegister();
         MIXER_RECIPES.recipeBuilder().EUt(12).duration(40)
-                .fluidInputs(Milk.getFluid(144), LemonExtract.getFluid(1))
+                .fluidInputs(Milk.getFluid(144), LemonExtract.getFluid(10))
+                .fluidOutputs(AcidicMilkSolution.getFluid(144))
+                .buildAndRegister();
+        MIXER_RECIPES.recipeBuilder().EUt(12).duration(40)
+                .fluidInputs(Milk.getFluid(144), CitricAcid.getFluid(1))
                 .fluidOutputs(AcidicMilkSolution.getFluid(144))
                 .buildAndRegister();
         MIXER_RECIPES.recipeBuilder().EUt(20).duration(60)

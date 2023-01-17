@@ -157,7 +157,7 @@ public class KebabChain {
                 .inputs(ONION_SLICE.getStackForm(4), MUSHROOM_SLICE.getStackForm(3), GTFOMaterialHandler.Fat.getItemStack(1))
                 .fluidInputs(GTFOMaterialHandler.TomatoSauce.getFluid(400))
                 .outputs(KubideMeat.getItemStack(5))
-                .notConsumable(new IntCircuitIngredient(0))
+                .notConsumable(new IntCircuitIngredient(3))
                 .buildAndRegister();
 
         MIXER_RECIPES.recipeBuilder().EUt(30).duration(120)
@@ -190,7 +190,7 @@ public class KebabChain {
                 .inputs(ONION_SLICE.getStackForm(8), Zest.getItemStack(2))
                 .fluidInputs(OliveOil.getFluid(500))
                 .outputs(BargMeat.getItemStack(10))
-                .notConsumable(new IntCircuitIngredient(0))
+                .notConsumable(new IntCircuitIngredient(3))
                 .buildAndRegister();
 
         MIXER_RECIPES.recipeBuilder().EUt(30).duration(100)
@@ -242,15 +242,15 @@ public class KebabChain {
 
     private static void baking() {
         int baseFuelKebab = 4;
-        int baseTemp = 350;
+        int baseTemp = 475;
         int baseDuration = 400;
-        GTFOUtils.addBakingOvenRecipes(KEBAB_KUBIDEH.getStackForm(4), KEBAB_KUBIDEH_COOKED.getStackForm(4), baseDuration + 100, baseTemp + 10, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_BARG.getStackForm(4), KEBAB_BARG_COOKED.getStackForm(4), baseDuration + 100, baseTemp + 15, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_TOMATO.getStackForm(4), KEBAB_TOMATO_COOKED.getStackForm(4), baseDuration, baseTemp, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_ONION.getStackForm(4), KEBAB_ONION_COOKED.getStackForm(4), baseDuration, baseTemp, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_CHUM.getStackForm(4), KEBAB_CHUM_COOKED.getStackForm(4), baseDuration, baseTemp, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_CARROT.getStackForm(4), KEBAB_CARROT_COOKED.getStackForm(4), baseDuration, baseTemp, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_FAT.getStackForm(4), KEBAB_FAT_COOKED.getStackForm(4), baseDuration, baseTemp, baseFuelKebab);
-        GTFOUtils.addBakingOvenRecipes(KEBAB_MEAT.getStackForm(4), KEBAB_MEAT_COOKED.getStackForm(4), baseDuration + 50, baseTemp + 10, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_KUBIDEH.getStackForm(), KEBAB_KUBIDEH_COOKED.getStackForm(), baseDuration + 100, baseTemp + 10, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_BARG.getStackForm(), KEBAB_BARG_COOKED.getStackForm(), baseDuration + 100, baseTemp + 15, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_TOMATO.getStackForm(), KEBAB_TOMATO_COOKED.getStackForm(), baseDuration, baseTemp, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_ONION.getStackForm(), KEBAB_ONION_COOKED.getStackForm(), baseDuration, baseTemp, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_CHUM.getStackForm(), KEBAB_CHUM_COOKED.getStackForm(), baseDuration, baseTemp, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_CARROT.getStackForm(), KEBAB_CARROT_COOKED.getStackForm(), baseDuration, baseTemp, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_FAT.getStackForm(), KEBAB_FAT_COOKED.getStackForm(), baseDuration, baseTemp, baseFuelKebab);
+        GTFOUtils.addBakingOvenRecipes(KEBAB_MEAT.getStackForm(), KEBAB_MEAT_COOKED.getStackForm(), baseDuration + 50, baseTemp + 10, baseFuelKebab);
     }
 }
