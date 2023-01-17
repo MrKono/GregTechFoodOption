@@ -290,6 +290,7 @@ gregtechfoodoption.multiblock.electric_baking_oven.tooltip.2=設定温度に達�
 gregtechfoodoption.multiblock.electric_baking_oven.tooltip.3=温度設定:
 gregtechfoodoption.multiblock.electric_baking_oven.tooltip.4=消費: %d EU/t.
 gregtechfoodoption.multiblock.electric_baking_oven.tooltip.5=設定温度: §a%dK§7.
+gregtechfoodoption.multiblock.electric_baking_oven.tooltip.6=自動温度調整:
 gregtechfoodoption.recipe.baking_oven_temperature=現在温度: %dK
 recipemap.baking_oven.name=初歩的なオーブン
 recipemap.electric_baking_oven.name=電気式オーブン
@@ -353,7 +354,7 @@ metaitem.food.sandwich.steak.large.tooltip="Steamed Hams"と呼ばないよう�
 metaitem.food.burger.meat.name=ミートバーガー
 metaitem.food.burger.meat.tooltip=一般向け
 metaitem.food.burger.cheese.name=チーズバーガー
-metaitem.food.burger.cheese.tooltip=技術的にはハンバーガー
+metaitem.food.burger.cheese.tooltip=技術的にはハマーガー
 metaitem.food.burger.veggie.name=野菜バーガー
 metaitem.food.burger.veggie.tooltip=まだこれをバーガーと呼ぶ.
 metaitem.food.bun.name=バン
@@ -618,8 +619,8 @@ material.gtfo_stearic_acid=ステアリン酸
 material.gtfo_sodium_stearate=ステアリン酸ナトリウム (石鹸)
 material.gtfo_citric_acid=クエン酸
 
-metaitem.tool.butchery_knife.hv.name=%sの電動肉切り包丁 (HV)
-metaitem.tool.butchery_knife.hv.tooltip=§9Mob Delivinizer §c4000
+item.gt.tool.butchery_knife.hv.name=%sの電動肉切り包丁 (HV)
+item.gt.tool.butchery_knife.hv.tooltip=§9Mob Delivinizer §c4000
 
 enchantment.level.0=I
 enchantment.level.6=VI
@@ -760,6 +761,9 @@ metaitem.food.ice_cream.bear.name=クマのアイスクリーム
 metaitem.food.ice_cream.bear.tooltip=Jr.賞は「ベーキングオーブン」を一度は手に入れた人
 metaitem.food.ice_cream.chip.name=ポテチアイスクリーム
 metaitem.food.ice_cream.chip.tooltip=https://tenor.com/view/cat-swim-in-milk-cat-kitty-milk-milk-cat-gif-23473453
+metaitem.food.ice_cream.rainbow.name=レインボーアイスクｒ－ム
+metaitem.food.ice_cream.rainbow.tooltip=虹のような複雑な味がする
+
 
 material.gtfo_skimmed_milk=脱脂乳
 material.gtfo_cream=クリーム
@@ -811,12 +815,12 @@ material.gtfo_rainbow_sap=虹の樹液
 material.gtfo_rub_sap=ゴムの樹液
 material.gtfo_sodium_arsenite_solution=亜ヒ酸ナトリウム溶液
 metaitem.arsenic_trioxide_dust.name=三酸化ヒ素
-metaitem.cupric_hydrogen_arsenite_dust.name=亜ヒ酸銅
+metaitem.cupric_hydrogen_arsenite_dust.name=シェーレグリーン
 tile.transparent_casing.greenhouse_glass.name=温室用ガラス
 gregtech.multiblock.not_enough_sun=警告: 屋根に十分な自然光が当たっていません.
 
 gregtechfoodoption.machine.greenhouse.tooltip.1=内部で植林をシミュレートする.
-gregtechfoodoption.machine.greenhouse.tooltip.2=屋根の一部が塞がれている場合, 動作時間が2倍になる.
+gregtechfoodoption.machine.greenhouse.tooltip.2=夜間または屋根の一部が塞がれている場合, 動作時間が2倍になる.
 
 material.gtfo_beer_batter=ビール入りの衣
 metaitem.puff_pastry_plate.name=パフペストリー
@@ -859,3 +863,7 @@ material.gtfo_rubber_sap=ゴムの樹液
 material.gtfo_blood=血液
 material.gtfo_fertilizer_solution=肥料溶液
 gregtechfoodoption.recipe.cause_damage=モブに%dダメージを与える
+
+material.gtfo_nilk=ニルク
+metaitem.food.nilk.name=ニルク
+metaitem.food.nilk.tooltip=ニルク
