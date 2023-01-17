@@ -690,7 +690,7 @@ metaitem.seed.onion.tooltip=ヤングオニオンの育成に
 
 death.attack.extermination=%sは安全確認を怠った
 death.attack.extraction=%sは内臓を摘出された
-gregtechfoodoption.machine.mob_exterminator.tooltip.warning=§cこれは容易にあなたを傷つけるだろう!
+gregtechfoodoption.machine.mob_exterminator.tooltip.warning=§cこれは容易にあなたを傷つけるでしょう!
 
 # Farmer
 gregtechfoodoption.machine.farmer.lv.name=基本型農作機
