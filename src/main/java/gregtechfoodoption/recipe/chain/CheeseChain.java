@@ -1,12 +1,13 @@
 package gregtechfoodoption.recipe.chain;
 
 import gregtech.common.items.MetaItems;
+import gregtechfoodoption.GTFOConfig;
 import gregtechfoodoption.utils.GTFOUtils;
 import net.minecraft.init.Items;
 
 import static gregtech.api.recipes.RecipeMaps.*;
 import static gregtech.api.unification.material.Materials.*;
-import static gregtech.api.unification.ore.OrePrefix.dust;
+import static gregtech.api.unification.ore.OrePrefix.*;
 import static gregtechfoodoption.GTFOMaterialHandler.*;
 import static gregtechfoodoption.item.GTFOMetaItem.*;
 import static gregtechfoodoption.recipe.GTFORecipeMaps.SLICER_RECIPES;
@@ -33,10 +34,16 @@ public class CheeseChain {
                 .notConsumable(SLICER_BLADE_STRIPES.getStackForm())
                 .outputs(CutCurd.getItemStack(64))
                 .buildAndRegister();
+        if (!GTFOConfig.gtfoChainsConfig.makeChainsHarder) {
+            CANNER_RECIPES.recipeBuilder().EUt(4).duration(200)
+                    .inputs(CutCurd.getItemStack(64), MetaItems.SHAPE_MOLD_BLOCK.getStackForm())
+                    .outputs(CHEDDAR_CURD_MOLD.getStackForm())
+                    .buildAndRegister();
+        }
         CHEMICAL_BATH_RECIPES.recipeBuilder().EUt(6).duration(2400)
                 .inputs(CutCurd.getItemStack(64))
                 .fluidInputs(Steam.getFluid(1000))
-                .outputs(CookedCurd.getItemStack(60))
+                .outputs(CookedCurd.getItemStack(64))
                 .buildAndRegister();
         MIXER_RECIPES.recipeBuilder().EUt(20).duration(100)
                 .input(dust, Salt)
@@ -44,7 +51,7 @@ public class CheeseChain {
                 .outputs(SaltedCurd.getItemStack(64))
                 .buildAndRegister();
         CANNER_RECIPES.recipeBuilder().EUt(4).duration(200)
-                .inputs(SaltedCurd.getItemStack(64), MetaItems.SHAPE_MOLD_BLOCK.getStackForm())
+                .inputs(SaltedCurd.getItemStack(32), MetaItems.SHAPE_MOLD_BLOCK.getStackForm())
                 .outputs(CHEDDAR_CURD_MOLD.getStackForm())
                 .buildAndRegister();
         COMPRESSOR_RECIPES.recipeBuilder().EUt(16).duration(6000)
@@ -64,8 +71,16 @@ public class CheeseChain {
                 .fluidInputs(ItalianBuffaloMilk.getFluid(730), Whey.getFluid(270))
                 .fluidOutputs(ActivatedBuffaloMilk.getFluid(1000))
                 .buildAndRegister();
+        if (!GTFOConfig.gtfoChainsConfig.makeChainsHarder) {
+            MIXER_RECIPES.recipeBuilder().EUt(8).duration(1200)
+                    .fluidInputs(Milk.getFluid(6000), CrudeRennetSolution.getFluid(1))
+                    .circuitMeta(2)
+                    .outputs(LargeMozzarellaCurd.getItemStack())
+                    .buildAndRegister();
+        }
         MIXER_RECIPES.recipeBuilder().EUt(8).duration(120)
                 .fluidInputs(ActivatedBuffaloMilk.getFluid(3000), CrudeRennetSolution.getFluid(1))
+                .circuitMeta(1)
                 .outputs(LargeMozzarellaCurd.getItemStack())
                 .buildAndRegister();
         SLICER_RECIPES.recipeBuilder().EUt(12).duration(1000)
@@ -179,5 +194,62 @@ public class CheeseChain {
                 .outputs(GORGONZOLA_TRIANGULAR_SLICE.getStackForm(16))
                 .buildAndRegister();
          */
+
+        LATHE_RECIPES.recipeBuilder().EUt(72).duration(360)
+                .input(block, StainlessSteel)
+                .outputs(CHEESE_ROLL_FORM.getStackForm())
+                .buildAndRegister();
+        CENTRIFUGE_RECIPES.recipeBuilder().EUt(24).duration(100)
+                .fluidInputs(Milk.getFluid(1000))
+                .fluidOutputs(UnpasteurizedSkimmedMilk.getFluid(800))
+                .buildAndRegister();
+        if (!GTFOConfig.gtfoChainsConfig.makeChainsHarder) {
+            MIXER_RECIPES.recipeBuilder().EUt(16).duration(500)
+                    .input(dustTiny, Copper)
+                    .fluidInputs(UnpasteurizedSkimmedMilk.getFluid(1000))
+                    .fluidOutputs(ParmigianoReggianoStarter.getFluid(1000))
+                    .buildAndRegister();
+        }
+        MIXER_RECIPES.recipeBuilder().EUt(16).duration(40)
+                .input(dustTiny, Copper)
+                .fluidInputs(UnpasteurizedSkimmedMilk.getFluid(500), Whey.getFluid(500))
+                .fluidOutputs(ParmigianoReggianoStarter.getFluid(1000))
+                .buildAndRegister();
+        if (!GTFOConfig.gtfoChainsConfig.makeChainsHarder) {
+            FLUID_SOLIDFICATION_RECIPES.recipeBuilder().EUt(16).duration(150)
+                    .fluidInputs(ParmigianoReggianoStarter.getFluid(1000))
+                    .inputs(CHEESE_ROLL_FORM.getStackForm())
+                    .outputs(BRINED_PARMIGIANO_ROLL.getStackForm())
+                    .buildAndRegister();
+        }
+        FLUID_HEATER_RECIPES.recipeBuilder().EUt(48).duration(300)
+                .fluidInputs(ParmigianoReggianoStarter.getFluid(1000))
+                .circuitMeta(1)
+                .fluidOutputs(CurdlingParmigianoReggiano.getFluid(2000))
+                .buildAndRegister();
+        FLUID_SOLIDFICATION_RECIPES.recipeBuilder().EUt(16).duration(150)
+                .fluidInputs(CurdlingParmigianoReggiano.getFluid(1000))
+                .inputs(CHEESE_ROLL_FORM.getStackForm())
+                .outputs(CURDLING_PARMIGIANO.getStackForm())
+                .buildAndRegister();
+        CHEMICAL_BATH_RECIPES.recipeBuilder().EUt(8).duration(800)
+                .inputs(CURDLING_PARMIGIANO.getStackForm())
+                .fluidInputs(SaltWater.getFluid(100))
+                .outputs(BRINED_PARMIGIANO.getStackForm())
+                .buildAndRegister();
+        CANNER_RECIPES.recipeBuilder().EUt(8).duration(40)
+                .inputs(BRINED_PARMIGIANO.getStackForm())
+                .outputs(BRINED_PARMIGIANO_ROLL.getStackForm(), CHEESE_ROLL_FORM.getStackForm())
+                .buildAndRegister();
+        FERMENTING_RECIPES.recipeBuilder().EUt(2).duration(36000)
+                .inputs(BRINED_PARMIGIANO_ROLL.getStackForm(64))
+                .fluidInputs(Air.getFluid(10000))
+                .outputs(AGED_PARMIGIANO_ROLL.getStackForm(64))
+                .fluidOutputs(Air.getFluid(9000))
+                .buildAndRegister();
+        MACERATOR_RECIPES.recipeBuilder().EUt(8).duration(120)
+                .inputs(AGED_PARMIGIANO_ROLL.getStackForm())
+                .outputs(ShreddedParmesan.getItemStack(8))
+                .buildAndRegister();
     }
 }

@@ -4,7 +4,6 @@ package gregtechfoodoption.recipe.chain;
 
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.recipes.ModHandler;
-import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.UnificationEntry;
@@ -16,7 +15,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +24,8 @@ import java.util.Map;
 import static gregtech.api.recipes.RecipeMaps.*;
 import static gregtech.api.unification.material.Materials.*;
 import static gregtech.api.unification.ore.OrePrefix.*;
-import static gregtech.common.items.MetaItems.*;
+import static gregtech.common.items.MetaItems.BOTTLE_PURPLE_DRINK;
+import static gregtech.common.items.MetaItems.PLANT_BALL;
 import static gregtechfoodoption.GTFOMaterialHandler.*;
 import static gregtechfoodoption.block.GTFOBlockCasing.CasingType.ADOBE_BRICKS;
 import static gregtechfoodoption.block.GTFOBlockCasing.CasingType.REINFORCED_ADOBE_BRICKS;
@@ -37,7 +36,6 @@ public class CoreChain {
     public static void init() {
         zest();
         caneSyrup();
-        meatAndFat();
         airRecipes();
         bakingOvenRecipes();
         chum();
@@ -46,6 +44,8 @@ public class CoreChain {
         misc();
         slicerBlades();
         slicingRecipes();
+        corn();
+        lithiumCarbonate();
     }
 
     public static void zest() {
@@ -70,7 +70,7 @@ public class CoreChain {
                 .EUt(5)
                 .duration(100)
                 .buildAndRegister();
-        //Hand recipe for early game (veeeery ineficient) P.S: i don't think anyone should use this tbh but i don't want people to feel forced, so have a crappy yield recipe :D
+        //Hand recipe for early game (veeeery inefficient) P.S: I don't think anyone should use this tbh but i don't want people to feel forced, so have a crappy yield recipe :D
         ModHandler.addShapelessRecipe("gtfo_hand_zest1", GTFOMaterialHandler.Zest.getItemStack(), LEMON, LEMON, LEMON, LEMON, OreDictUnifier.get("craftingToolMortar"));
         ModHandler.addShapelessRecipe("gtfo_hand_zest2", GTFOMaterialHandler.Zest.getItemStack(), LIME, LIME, LIME, LIME, OreDictUnifier.get("craftingToolMortar"));
         ModHandler.addShapelessRecipe("gtfo_hand_zest3", GTFOMaterialHandler.Zest.getItemStack(), ORANGE, ORANGE, ORANGE, ORANGE, OreDictUnifier.get("craftingToolMortar"));
@@ -79,7 +79,7 @@ public class CoreChain {
     public static void caneSyrup() {
         FLUID_HEATER_RECIPES.recipeBuilder()
                 .fluidInputs(GTFOMaterialHandler.UnheatedCaneSyrup.getFluid(1000))
-                .circuitMeta(0)
+                .circuitMeta(1)
                 .fluidOutputs(GTFOMaterialHandler.CaneSyrup.getFluid(1000))
                 .EUt(120)
                 .duration(80)
@@ -88,6 +88,7 @@ public class CoreChain {
         MIXER_RECIPES.recipeBuilder()
                 .input(OrePrefix.dust, Sugar, 24)
                 .fluidInputs(Water.getFluid(2000))
+                .circuitMeta(2)
                 .fluidOutputs(GTFOMaterialHandler.UnheatedCaneSyrup.getFluid(2000))
                 .EUt(80)
                 .duration(260)
@@ -101,9 +102,10 @@ public class CoreChain {
                 .fluidOutputs(GTFOMaterialHandler.IsopropylChloride.getFluid(1000))
                 .buildAndRegister();
 
-        ELECTROLYZER_RECIPES.recipeBuilder().duration(300).EUt(480)
+        CHEMICAL_RECIPES.recipeBuilder().duration(300).EUt(480)
                 .input(dust, Gold, 2)
                 .fluidInputs(HydrochloricAcid.getFluid(8000))
+                .circuitMeta(1)
                 .fluidOutputs(GTFOMaterialHandler.ChloroauricAcid.getFluid(2000), Hydrogen.getFluid(3000))
                 .buildAndRegister();
     }
@@ -212,7 +214,15 @@ public class CoreChain {
                 .fluidOutputs(Biomass.getFluid(200))
                 .fluidOutputs(AceticAcid.getFluid(10))
                 .fluidOutputs(Water.getFluid(1000))
+                .fluidOutputs(HydrogenCyanide.getFluid(10))
                 .output(dust, Sugar)
+                .buildAndRegister();
+
+        CHEMICAL_RECIPES.recipeBuilder().EUt(30).duration(80)
+                .fluidInputs(HydrogenCyanide.getFluid(1000))
+                .input(dust, SodiumHydroxide, 3)
+                .outputs(SodiumCyanide.getItemStack(3))
+                .fluidOutputs(Water.getFluid(1000))
                 .buildAndRegister();
 
         DISTILLATION_RECIPES.recipeBuilder().EUt(120).duration(40)
@@ -329,6 +339,7 @@ public class CoreChain {
         slicingArray.put(OLIVE, OLIVE_SLICE);
         slicingArray.put(TOMATO, TOMATO_SLICE);
         slicingArray.put(ONION, ONION_SLICE);
+        slicingArray.put(AUBERGINE, EGGPLANT_SLICE);
         for (Map.Entry<MetaItem<?>.MetaValueItem, MetaItem<?>.MetaValueItem> entry : slicingArray.entrySet()) {
             ModHandler.addShapelessRecipe("gtfo_slice_" + entry.getKey().unlocalizedName, entry.getValue().getStackForm(4), 'k', entry.getKey());
             SLICER_RECIPES.recipeBuilder().EUt(18).duration(30)
@@ -465,122 +476,6 @@ public class CoreChain {
                 .buildAndRegister();
     }
 
-    public static void meatAndFat() {
-        ModHandler.addShapelessRecipe("meat_hand_recipe", ToughMeat.getItemStack(2), OreDictUnifier.get("dustWheat"), new UnificationEntry(dust, Meat), new UnificationEntry(dust, Meat), Items.WATER_BUCKET);
-        GTFOUtils.getMeat().forEach(itemStack -> {
-            itemStack.setCount(8);
-            CENTRIFUGE_RECIPES.recipeBuilder().EUt(20).duration(400)
-                    .inputs(itemStack)
-                    .output(dust, Meat, 13)
-                    .output(dustSmall, Bone, 8)
-                    .outputs(Fat.getItemStack(8))
-                    .chancedOutput(Fat.getItemStack(4), 5000, 2000)
-                    .notConsumable(new IntCircuitIngredient(0))
-                    .buildAndRegister();
-            LARGE_CHEMICAL_RECIPES.recipeBuilder().EUt(256).duration(1000)
-                    .input(itemStack.getItem(), 32)
-                    .fluidInputs(Methanol.getFluid(4000), Chloroform.getFluid(4000))
-                    .output(dust, Meat, 40)
-                    .output(dust, Bone, 16)
-                    .fluidOutputs(Stearin.getFluid(3200), Sludge.getFluid(12000), Chlorine.getFluid(12000))
-                    .buildAndRegister();
-        });
-
-        LARGE_CHEMICAL_RECIPES.recipeBuilder().EUt(256).duration(1000)
-                .input(SCRAP_MEAT, 32)
-                .fluidInputs(Methanol.getFluid(4000), Chloroform.getFluid(4000))
-                .output(dust, Meat, 32)
-                .output(dust, Bone, 20)
-                .fluidOutputs(Stearin.getFluid(3500), Sludge.getFluid(16000), Chlorine.getFluid(12000))
-                .buildAndRegister();
-
-        CENTRIFUGE_RECIPES.recipeBuilder().EUt(20).duration(400)
-                .input(SCRAP_MEAT, 8)
-                .output(dust, Meat, 10)
-                .output(dustSmall, Bone, 16)
-                .outputs(Fat.getItemStack(10))
-                .chancedOutput(Fat.getItemStack(4), 5000, 2000)
-                .buildAndRegister();
-
-        CENTRIFUGE_RECIPES.recipeBuilder().EUt(30).duration(300)
-                .input(dust, Meat, 3)
-                .fluidOutputs(Biomass.getFluid(200), Stearin.getFluid(10))
-                .buildAndRegister();
-
-        FERMENTING_RECIPES.recipeBuilder().EUt(32).duration(1200)
-                .input(SCRAP_MEAT, 1)
-                .fluidInputs(Chloroform.getFluid(100))
-                .output(dust, Meat, 1)
-                .fluidOutputs(Stearin.getFluid(40))
-                .buildAndRegister();
-
-        GTFOUtils.getOrganicOils().forEach(f -> {
-            // turning Plant Oil into Animal Oil?! Magik!
-            CHEMICAL_RECIPES.recipeBuilder().EUt(30).duration(300)
-                    .input(dustTiny, SodaAsh)
-                    .fluidInputs(new FluidStack(f, 1000), Hydrogen.getFluid(1000))
-                    .fluidOutputs(Stearin.getFluid(100))
-                    .notConsumable(new IntCircuitIngredient(1))
-                    .buildAndRegister();
-        });
-
-        Arrays.asList(Methanol, Ethanol).forEach(f -> {
-            CHEMICAL_RECIPES.recipeBuilder().EUt(30).duration(600)
-                    .input(dustTiny, SodiumHydroxide)
-                    .fluidInputs(Stearin.getFluid(3000), f.getFluid(1000))
-                    .fluidOutputs(Glycerol.getFluid(1000), BioDiesel.getFluid(6000))
-                    .buildAndRegister();
-            LARGE_CHEMICAL_RECIPES.recipeBuilder().EUt(30).duration(5400)
-                    .input(dust, SodiumHydroxide)
-                    .fluidInputs(Stearin.getFluid(27000), f.getFluid(9000))
-                    .fluidOutputs(Glycerol.getFluid(9000), BioDiesel.getFluid(54000))
-                    .buildAndRegister();
-        });
-
-        EXTRACTOR_RECIPES.recipeBuilder().EUt(16).duration(10)
-                .inputs(Fat.getItemStack())
-                .fluidOutputs(Stearin.getFluid(100))
-                .buildAndRegister();
-
-        FLUID_SOLIDFICATION_RECIPES.recipeBuilder().EUt(16).duration(60)
-                .notConsumable(MetaItems.SHAPE_MOLD_INGOT)
-                .fluidInputs(Stearin.getFluid(100))
-                .outputs(Fat.getItemStack())
-                .buildAndRegister();
-
-        CHEMICAL_RECIPES.recipeBuilder().EUt(120).duration(40)
-                .fluidInputs(Stearin.getFluid(1000), Water.getFluid(2000))
-                .input(dust, SodiumHydroxide, 3)
-                .fluidOutputs(SodiumStearate.getFluid(3000), Glycerol.getFluid(1000))
-                .buildAndRegister();
-
-        //"Stearic acid is used along with simple sugar or corn syrup as a hardener in candies. In fireworks, stearic acid is often used to coat metal powders such as aluminium and iron. This prevents oxidation, allowing compositions to be stored for a longer period of time"
-        DISTILLATION_RECIPES.recipeBuilder().EUt(32).duration(10)
-                .fluidInputs(SodiumStearate.getFluid(100))
-                .fluidOutputs(StearicAcid.getFluid(100))
-                .output(dustTiny, SodiumHydroxide, 1)
-                .buildAndRegister();
-
-        /*FLUID_SOLIDFICATION_RECIPES.recipeBuilder().EUt(32).duration(100)
-                .fluidInputs(StearicAcidSoap.getFluid(1000))
-                .output(soap)
-                .buildAndRegister();
-                //TODO: Maybe do soaps with this :p (this works as a food addtive soap? with stearin atleast idk)
-                */
-
-        //TODO: make it refine to Fertilizer Later! & Biosolids
-        LARGE_CHEMICAL_RECIPES.recipeBuilder().EUt(30).duration(800)
-                .fluidInputs(Sludge.getFluid(24000))
-                .fluidInputs(Bacteria.getFluid(1000))
-                .fluidOutputs(Biomass.getFluid(10000))
-                .fluidOutputs(Water.getFluid(14000))
-                .fluidOutputs(SulfurDioxide.getFluid(8000))
-                .fluidOutputs(Methane.getFluid(8000))
-                .input(dust, Calcite, 3)
-                .notConsumable(CARBON_MESH)
-                .notConsumable(new IntCircuitIngredient(1))
-                .buildAndRegister();
-    }
 
     public static void misc() {
         CANNER_RECIPES.recipeBuilder()
@@ -605,6 +500,19 @@ public class CoreChain {
                 .EUt(45)
                 .duration(60)
                 .buildAndRegister();
+        EXTRACTOR_RECIPES.recipeBuilder().duration(60).EUt(24)
+                .input(Items.EGG)
+                .fluidOutputs(Egg.getFluid(200))
+                .buildAndRegister();
+
+        CENTRIFUGE_RECIPES.recipeBuilder()
+                .fluidInputs(Egg.getFluid(200))
+                .fluidOutputs(GTFOMaterialHandler.Albumen.getFluid(100))
+                .fluidOutputs(GTFOMaterialHandler.Yolk.getFluid(100))
+                .EUt(16)
+                .duration(60)
+                .buildAndRegister();
+
 
         MACERATOR_RECIPES.recipeBuilder().EUt(4).duration(40)
                 .input(Items.POTATO)
@@ -626,11 +534,6 @@ public class CoreChain {
                 .outputs(GTFOMaterialHandler.MeatIngot.getItemStack())
                 .buildAndRegister();
 
-        MACERATOR_RECIPES.recipeBuilder().EUt(4).duration(40)
-                .inputs(SCRAP_MEAT.getStackForm())
-                .output(dust, Meat)
-                .buildAndRegister();
-
         GTFOUtils.addBakingOvenRecipes(OreDictUnifier.get(dust, Meat), CookedMinceMeat.getItemStack(), 200, 400, 1);
 
         ASSEMBLER_RECIPES.recipeBuilder().EUt(30).duration(60)
@@ -639,7 +542,7 @@ public class CoreChain {
                 .outputs(POPCORN_BAG.getStackForm())
                 .buildAndRegister();
         ASSEMBLER_RECIPES.recipeBuilder().EUt(80).duration(30)
-                .circuitMeta(0)
+                .circuitMeta(2)
                 .input(plate, Paper, 3)
                 .outputs(PAPER_BAG.getStackForm())
                 .buildAndRegister();
@@ -654,5 +557,36 @@ public class CoreChain {
                 .fluidInputs(Water.getFluid(5000))
                 .fluidOutputs(FertilizerSolution.getFluid(5000))
                 .buildAndRegister();
+
+        MACERATOR_RECIPES.recipeBuilder().EUt(8).duration(100)
+                .inputs(HORSERADISH.getStackForm())
+                .outputs(GratedHorseradishRoot.getItemStack())
+                .buildAndRegister();
+
+        FORMING_PRESS_RECIPES.recipeBuilder().EUt(64).duration(200)
+                .inputs(BEANS.getStackForm(), MeatIngot.getItemStack())
+                .input(plate, Polyethylene, 2)
+                .outputs(EMERGENCY_RATIONS.getStackForm())
+                .buildAndRegister();
+    }
+
+    public static void corn() {
+        EXTRACTOR_RECIPES.recipeBuilder().duration(60).EUt(16)
+                .inputs(CornKernel.getItemStack())
+                .outputs(BareCornKernel.getItemStack())
+                .buildAndRegister();
+
+        CENTRIFUGE_RECIPES.recipeBuilder().EUt(16).duration(200)
+                .inputs(CORN_EAR.getStackForm())
+                .outputs(CornKernel.getItemStack(20))
+                .outputs(CORN_COB.getStackForm())
+                .buildAndRegister();
+
+        ModHandler.addShapelessRecipe("gtfo_hand_corn_seed", BareCornKernel.getItemStack(), CornKernel.getItemStack());
+        ModHandler.addShapelessRecipe("gtfo_hand_corn_kernel", CornKernel.getItemStack(10), CORN_EAR.getStackForm());
+    }
+
+    public static void lithiumCarbonate() {
+
     }
 }

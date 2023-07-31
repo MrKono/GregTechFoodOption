@@ -1,17 +1,18 @@
 package gregtechfoodoption.block;
 
-import gregtech.api.recipes.ModHandler;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.function.TriConsumer;
 import gregtech.common.items.MetaItems;
+import gregtech.loaders.WoodTypeEntry;
+import gregtechfoodoption.GTFOValues;
 import gregtechfoodoption.block.tree.GTFOBlockLeaves;
 import gregtechfoodoption.block.tree.GTFOBlockLog;
 import gregtechfoodoption.block.tree.GTFOBlockSapling;
 import gregtechfoodoption.utils.GTFOLog;
 import gregtechfoodoption.utils.GTFOUtils;
-import gregtechfoodoption.worldgen.trees.BiomeCondition;
+import gregtechfoodoption.worldgen.trees.condition.TreeCondition;
 import gregtechfoodoption.worldgen.trees.GTFOTreeGen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Random;
 
 import static gregtech.api.unification.material.Materials.Steel;
+import static gregtech.loaders.recipe.WoodRecipeLoader.registerWoodTypeRecipe;
 import static gregtechfoodoption.recipe.GTFORecipeMaps.GREENHOUSE_RECIPES;
 import static net.minecraft.block.BlockLeaves.CHECK_DECAY;
 import static net.minecraft.block.BlockLeaves.DECAYABLE;
@@ -51,7 +53,7 @@ public abstract class GTFOTree {
 
     private NoiseGeneratorSimplex generatorSimplex;
     private final int seed;
-    public final List<BiomeCondition> biomeConditions = new ArrayList<>();
+    public final List<TreeCondition> treeConditions = new ArrayList<>();
 
     public static final List<GTFOTree> TREES = new ArrayList<>();
 
@@ -112,8 +114,8 @@ public abstract class GTFOTree {
         return WORLD_GEN_INSTANCE;
     }
 
-    public GTFOTree addCondition(BiomeCondition condition) {
-        biomeConditions.add(condition);
+    public GTFOTree addCondition(TreeCondition condition) {
+        treeConditions.add(condition);
         return this;
     }
 
@@ -208,14 +210,15 @@ public abstract class GTFOTree {
     }
 
     public void initRecipes() {
-        ItemStack sapling = new ItemStack(GTFOMetaBlocks.GTFO_SAPLINGS.get(seed / 8), 1, (seed % 8) << 1);
+        ItemStack sapling = this.getSaplingStack();
         ItemStack planks = new ItemStack(GTFOMetaBlocks.GTFO_PLANKS.get(seed / 16), 1, seed % 16);
         ItemStack log = new ItemStack(GTFOMetaBlocks.GTFO_LOGS.get(seed / 4), 1, (seed % 4) << 2);
         ItemStack leaves = new ItemStack(GTFOMetaBlocks.GTFO_LEAVES.get(seed / 4), 1, (seed % 4) << 2);
 
-        ItemStack planksAmount = planks.copy();
-        planksAmount.setCount(4);
-        ModHandler.addShapelessRecipe(this.name + "_wood_planks", planksAmount, log);
+        registerWoodTypeRecipe(new WoodTypeEntry.Builder(GTFOValues.MODID, this.name)
+                .planks(planks, null)
+                .log(log)
+                .build());
 
         GREENHOUSE_RECIPES.recipeBuilder().EUt(60).duration(2000)
                 .inputs(sapling)
@@ -291,5 +294,9 @@ public abstract class GTFOTree {
 
     public Fluid getSap() {
         return null;
+    }
+
+    public ItemStack getSaplingStack() {
+        return new ItemStack(GTFOMetaBlocks.GTFO_SAPLINGS.get(seed / 8), 1, (seed % 8) << 1);
     }
 }

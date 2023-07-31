@@ -4,7 +4,6 @@ import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.widgets.ProgressWidget;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMap;
-import gregtech.api.recipes.builders.IntCircuitRecipeBuilder;
 import gregtech.api.recipes.builders.SimpleRecipeBuilder;
 import gregtech.core.sound.GTSoundEvents;
 import gregtechfoodoption.GTFOConfig;
@@ -30,8 +29,8 @@ public class GTFORecipeMaps {
             .setProgressBar(GTFOGuiTextures.PROGRESS_BAR_SLICER, ProgressWidget.MoveType.HORIZONTAL);
 
     @ZenProperty
-    public static final RecipeMap<IntCircuitRecipeBuilder> CUISINE_ASSEMBLER_RECIPES = new RecipeMap<>("cuisine_assembler",
-            0, 6, 0, 2, 0, 3, 0, 1, new IntCircuitRecipeBuilder(), false)
+    public static final RecipeMap<SimpleRecipeBuilder> CUISINE_ASSEMBLER_RECIPES = new RecipeMap<>("cuisine_assembler",
+            0, 6, 0, 2, 0, 3, 0, 1, new SimpleRecipeBuilder(), false)
             .setSound(GTSoundEvents.ASSEMBLER)
             .setSlotOverlay(false, false, true, GuiTextures.INT_CIRCUIT_OVERLAY)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressWidget.MoveType.HORIZONTAL);
@@ -41,6 +40,14 @@ public class GTFORecipeMaps {
             1, 1, 1, 1, 0, 0, 0, 0, new SimpleRecipeBuilder(), false)
             .setSound(GTSoundEvents.ARC)
             .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressWidget.MoveType.HORIZONTAL);
+
+    @ZenProperty
+    public static final RecipeMap<SimpleRecipeBuilder> MULTICOOKER_RECIPES = new RecipeMap<>("multicooker",
+            0, 6, 0, 3, 0, 3, 0, 2, new SimpleRecipeBuilder(), false)
+            .setSlotOverlay(false, true, GuiTextures.HEATING_OVERLAY_1)
+            .setSound(GTSoundEvents.MIXER)
+            .setProgressBar(GuiTextures.PROGRESS_BAR_ARROW, ProgressWidget.MoveType.HORIZONTAL);
+
 
     @ZenProperty
     public static final ElectricBakingOvenRecipeMap<ElectricBakingOvenRecipeBuilder> ELECTRIC_BAKING_OVEN_RECIPES = (ElectricBakingOvenRecipeMap<ElectricBakingOvenRecipeBuilder>) new ElectricBakingOvenRecipeMap<>("electric_baking_oven", new ElectricBakingOvenRecipeBuilder())
@@ -71,6 +78,6 @@ public class GTFORecipeMaps {
             .setSound(GTSoundEvents.COMPRESSOR);
 
     @ZenProperty
-    public static final RecipeMap<IntCircuitRecipeBuilder> GREENHOUSE_RECIPES = new RecipeMap<>("greenhouse", 2, 4, 1, 4, 0, 1, 0, 1, new IntCircuitRecipeBuilder(), false)
+    public static final RecipeMap<SimpleRecipeBuilder> GREENHOUSE_RECIPES = new RecipeMap<>("greenhouse", 2, 4, 1, 4, 0, 1, 0, 1, new SimpleRecipeBuilder(), false)
             .setSound(GTSoundEvents.COOLING);
 }

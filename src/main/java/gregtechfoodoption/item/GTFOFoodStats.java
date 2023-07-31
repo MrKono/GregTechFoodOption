@@ -2,14 +2,17 @@ package gregtechfoodoption.item;
 
 import gregtech.api.items.metaitem.stats.IFoodBehavior;
 import gregtech.api.items.metaitem.stats.IItemBehaviour;
-import gregtech.api.util.GTUtility;
 import gregtech.api.util.RandomPotionEffect;
 import gregtechfoodoption.GTFOValues;
 import gregtechfoodoption.integration.applecore.GTFOAppleCoreCompat;
+import gregtechfoodoption.potion.CyanidePoisoningPotion;
 import gregtechfoodoption.utils.GTFOUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.Arrays;
@@ -17,12 +20,12 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class GTFOFoodStats implements IFoodBehavior, IItemBehaviour { // These names suck
-    public final int foodLevel;
-    public final float saturation;
-    public final boolean isDrink;
-    public final boolean alwaysEdible;
-    public final RandomPotionEffect[] potionEffects;
-    public final Supplier<ItemStack> stackSupplier;
+    protected int foodLevel;
+    protected float saturation;
+    protected boolean isDrink;
+    protected boolean alwaysEdible;
+    public RandomPotionEffect[] potionEffects;
+    public Supplier<ItemStack> stackSupplier;
     protected int eatingDuration = 32;
 
     public GTFOFoodStats(int foodLevel, float saturation, boolean isDrink, boolean alwaysEdible, Supplier<ItemStack> itemStackSupplier, RandomPotionEffect... potionEffects) {
@@ -67,33 +70,43 @@ public class GTFOFoodStats implements IFoodBehavior, IItemBehaviour { // These n
         return this.alwaysEdible;
     }
 
+    public GTFOFoodStats setReturnStack(ItemStack stack) {
+        this.stackSupplier = () -> stack;
+        return this;
+    }
+
     public ItemStack onFoodEaten(ItemStack itemStack, EntityPlayer player) {
+        NBTTagCompound nbtStats = itemStack.getSubCompound("gtfoStats");
+        if (nbtStats != null) {
+            if (nbtStats.getBoolean("5dkcap/2/4/")) { // Cyanide
+                player.addPotionEffect(new PotionEffect(CyanidePoisoningPotion.INSTANCE, 500, 0));
+            }
+        }
+
         if (Loader.isModLoaded(GTFOValues.MODID_AP)) {
             itemStack.grow(1);
             GTFOAppleCoreCompat.sendEatenEvent(player, itemStack, getFoodLevel(itemStack, player), getSaturation(itemStack, player));
             itemStack.shrink(1);
         }
-        if (!player.world.isRemote) {
-            for (RandomPotionEffect potionEffect : this.potionEffects) {
-                if (Math.random() * 100.0D > (double) potionEffect.chance) {
-                    player.addPotionEffect(GTUtility.copyPotionEffect(potionEffect.effect));
-                }
+        for (RandomPotionEffect potionEffect : this.potionEffects) {
+            if (Math.random() * 100.0D > (double) potionEffect.chance) {
+                player.addPotionEffect(new PotionEffect(potionEffect.effect));
             }
-
+        }
+        if (player != null && !player.world.isRemote) {
             if (this.stackSupplier != null) {
                 ItemStack containerItem = stackSupplier.get().copy();
-                if (player == null || !player.capabilities.isCreativeMode) {
+                if (!player.capabilities.isCreativeMode) {
                     if (itemStack.isEmpty()) {
                         return containerItem;
                     }
 
-                    if (player != null && !player.inventory.addItemStackToInventory(containerItem)) {
+                    if (!player.inventory.addItemStackToInventory(containerItem)) {
                         player.dropItem(containerItem, false, false);
                     }
                 }
             }
         }
-
 
         return itemStack;
     }
@@ -103,6 +116,10 @@ public class GTFOFoodStats implements IFoodBehavior, IItemBehaviour { // These n
         if (this.potionEffects.length > 0) {
             GTFOUtils.addPotionTooltip(Arrays.asList(potionEffects), list);
         }
+        list.add(new TextComponentTranslation("gregtechfoodoption.tooltip.food.lacing").getFormattedText());
+        if (this.eatingDuration != 32) {
+            list.add(new TextComponentTranslation("gregtechfoodoption.tooltip.food.duration", this.eatingDuration).getFormattedText());
+        }
     }
 
     public GTFOFoodStats setEatingDuration(int duration) {
@@ -110,7 +127,20 @@ public class GTFOFoodStats implements IFoodBehavior, IItemBehaviour { // These n
         return this;
     }
 
+    public GTFOFoodStats setPotionEffects(RandomPotionEffect... effects) {
+        this.potionEffects = effects;
+        return this;
+    }
+
     public int getEatingDuration() {
         return eatingDuration;
+    }
+
+    public RandomPotionEffect[] getPotionEffects() {
+        return potionEffects;
+    }
+
+    public Supplier<ItemStack> getStackSupplier() {
+        return stackSupplier;
     }
 }

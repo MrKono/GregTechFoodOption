@@ -12,6 +12,9 @@ public class GTFOConfig {
     @Config.Comment("Show tooltips always, regardless of what keys are held?")
     public static boolean showTooltipsAlways = true;
 
+    @Config.Comment("Turn on GTFO tree generation? Required for many mod features.")
+    public static boolean enableGTFOTrees = true;
+
     @Config.Comment("Chain Options")
     public static GTFOChainsConfig gtfoChainsConfig = new GTFOChainsConfig();
 
@@ -48,6 +51,9 @@ public class GTFOConfig {
 
         @Config.Comment("Delete vanilla bread recipe?")
         public boolean deleteBreadRecipe = false;
+
+        @Config.Comment("Force chains to be harder? (Most of the content of the hard chains will still exist, but less efficient and easier routes will exist without this configuration.)")
+        public boolean makeChainsHarder = false;
     }
 
     public static class GTFOVanillaOverridesConfig {
@@ -197,6 +203,7 @@ public class GTFOConfig {
 
     public static class GTFOMiscConfig {
         @Config.Comment("Create methane centrifuging recipes for GTFO seeds?")
+        @Config.RequiresMcRestart
         public boolean centrifugeSeeds = true;
 
         @Config.Comment("Greenhouse replacements for dirt (use block names like minecraft:dirt or blockstates like minecraft:dirt[snowy=true])")
@@ -204,6 +211,15 @@ public class GTFOConfig {
         public String[] greenhouseDirts = new String[0];
 
         @Config.Comment("Add furnace recipes for each baking oven recipe?")
+        @Config.RequiresMcRestart
         public boolean bakingOvenReplacement = false;
+
+        @Config.Comment("Add GTFO foods to dungeons?")
+        @Config.RequiresMcRestart
+        public boolean addDungeonFoods = true;
+
+        @Config.Comment("Add GTFO foods laced with cyanide to dungeons?")
+        @Config.RequiresMcRestart
+        public boolean addLacedDungeonFoods = true;
     }
 }

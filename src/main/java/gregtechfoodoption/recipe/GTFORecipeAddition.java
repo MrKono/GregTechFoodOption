@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Loader;
 public class GTFORecipeAddition {
     public static void init() {
         CoreChain.init();
+        FatChain.init();
         GTFOTree.TREES.forEach(GTFOTree::initRecipes);
         GreenhouseChain.init();
         MobExtractionChain.init();
@@ -26,10 +27,16 @@ public class GTFORecipeAddition {
         BritishChain.init();
         PotatoProcessingChain.init();
         AlcoholChain.init();
+        PurpleDrinkChain.init();
+        CapletChain.init();
+        IVBagChain.init();
+        ItalianChain.init();
+        PastaChain.init();
+        PlateChain.init();
+
         if (Loader.isModLoaded(GTFOValues.MODID_GCYS)) {
             PopcornChain.init();
             MineralWaterChain.init();
-            PurpleDrinkChain.init();
         }
     }
 

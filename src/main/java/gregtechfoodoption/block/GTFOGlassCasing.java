@@ -1,7 +1,6 @@
 package gregtechfoodoption.block;
 
 import gregtech.api.block.VariantActiveBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -21,7 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class GTFOGlassCasing extends VariantActiveBlock<GTFOGlassCasing.CasingType> {
 
     public GTFOGlassCasing() {
-        super(Material.IRON);
+        super(Material.GLASS);
         setTranslationKey("transparent_casing");
         setHardness(5.0F);
         setResistance(5.0F);
@@ -56,11 +55,17 @@ public class GTFOGlassCasing extends VariantActiveBlock<GTFOGlassCasing.CasingTy
     @Override
     @SideOnly(Side.CLIENT)
     @SuppressWarnings("deprecation")
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
-        Block block = iblockstate.getBlock();
+    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+        IBlockState sideState = world.getBlockState(pos.offset(side));
 
-        return block != this && super.shouldSideBeRendered(blockState, blockAccess, pos, side);
+        return sideState.getBlock() == this ?
+                getState(sideState) != getState(state) :
+                super.shouldSideBeRendered(state, world, pos, side);
+    }
+
+    @Override
+    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+        return BlockRenderLayer.TRANSLUCENT == layer;
     }
 
     public enum CasingType implements IStringSerializable {

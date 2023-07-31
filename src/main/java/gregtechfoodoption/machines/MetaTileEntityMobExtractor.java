@@ -66,7 +66,7 @@ public class MetaTileEntityMobExtractor extends SimpleMachineMetaTileEntity {
         if (attackableTarget != null && recipe.hasProperty(CauseDamageProperty.getInstance())) {
             float damage = recipe.getProperty(CauseDamageProperty.getInstance(), 0f);
             if (damage > 0) {
-                attackableTarget.attackEntityFrom(GTFODamageSources.getExtractionDamage(), damage);
+                attackableTarget.attackEntityFrom(GTFODamageSources.EXTRACTION, damage);
             }
         }
     }
@@ -82,7 +82,7 @@ public class MetaTileEntityMobExtractor extends SimpleMachineMetaTileEntity {
         }
 
         @Override
-        protected boolean checkRecipe(Recipe recipe) {
+        public boolean checkRecipe(Recipe recipe) {
             return ((MetaTileEntityMobExtractor) metaTileEntity).checkRecipe(recipe);
         }
 

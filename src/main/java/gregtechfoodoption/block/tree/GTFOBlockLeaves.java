@@ -5,6 +5,7 @@ import gregtech.core.CoreModule;
 import gregtechfoodoption.GTFOValues;
 import gregtechfoodoption.block.GTFOMetaBlocks;
 import gregtechfoodoption.block.GTFOTree;
+import gregtechfoodoption.block.GTFOTrees;
 import gregtechfoodoption.block.IVariantNamed;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPlanks;
@@ -54,6 +55,9 @@ public class GTFOBlockLeaves extends BlockLeaves implements IVariantNamed {
     }
 
     public GTFOTree getTreeFromState(IBlockState state) {
+        if (state.getValue(VARIANT) + (offset * 4) > GTFOTree.TREES.size()) {
+            return GTFOTrees.LEMON_TREE; // Buildcraft again being awful
+        }
         return GTFOTree.TREES.get(state.getValue(VARIANT) + (offset * 4));
     }
 
@@ -115,7 +119,11 @@ public class GTFOBlockLeaves extends BlockLeaves implements IVariantNamed {
 
     @Override
     public String getVariantTranslationKey(IBlockState state) {
-        return "gregtechfoodoption.leaves." + this.getTreeFromState(state).name;
+        try {
+            return "gregtechfoodoption.leaves." + this.getTreeFromState(state).name;
+        } catch (IndexOutOfBoundsException e) {
+            return "gregtechfoodoption.hello_buildcraft";
+        }
     }
 
     // The following code mostly taken from GregTechCEu's BlockRubberLeaves.java

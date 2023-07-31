@@ -2,8 +2,8 @@ package gregtechfoodoption.item;
 
 import gregtech.api.items.metaitem.FoodUseManager;
 import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.items.metaitem.StandardMetaItem;
 import gregtech.api.items.metaitem.stats.IFoodBehavior;
+import gregtech.api.items.metaitem.stats.IItemComponent;
 import gregtech.api.items.metaitem.stats.IItemContainerItemProvider;
 import gregtech.api.items.toolitem.IGTTool;
 import gregtech.api.unification.OreDictUnifier;
@@ -13,9 +13,9 @@ import gregtech.common.items.MetaItems;
 import gregtechfoodoption.GTFOConfig;
 import gregtechfoodoption.GTFOValues;
 import gregtechfoodoption.block.GTFOCrops;
-import gregtechfoodoption.potion.CreativityPotion;
-import gregtechfoodoption.potion.SnowGolemSpawnerPotion;
-import gregtechfoodoption.potion.StepAssistPotion;
+import gregtechfoodoption.item.food.GTFOFoodUseManager;
+import gregtechfoodoption.potion.*;
+import gregtechfoodoption.utils.GTFOLog;
 import gregtechfoodoption.utils.GTFOUtils;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -29,20 +29,22 @@ import squeek.applecore.api.food.FoodValues;
 import squeek.applecore.api.food.IEdible;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 
 import static gregtech.api.unification.material.Materials.*;
+import static gregtechfoodoption.GTFOMaterialHandler.BareCornKernel;
 import static net.minecraft.potion.Potion.getPotionById;
 
 
 @Optional.Interface(modid = GTFOValues.MODID_AP, iface = "squeek.applecore.api.food.IEdible")
-public class GTFOMetaItem extends StandardMetaItem implements IEdible {
+public class GTFOMetaItem extends MetaItem<GTFOMetaItem.GTFOMetaValueItem> implements IEdible {
     //foods
     public static MetaItem<?>.MetaValueItem POPCORN_BAG;
     public static MetaItem<?>.MetaValueItem PAPER_BAG;
     public static MetaItem<?>.MetaValueItem FLAVORED_POPCORN_FLAKE;
-    public static MetaItem<?>.MetaValueItem POPCORN_COB;
-    public static MetaItem<?>.MetaValueItem DRIED_POPCORN_EAR;
-    public static MetaItem<?>.MetaValueItem POPCORN_EAR;
+    public static MetaItem<?>.MetaValueItem CORN_COB;
+    public static MetaItem<?>.MetaValueItem DRIED_CORN_EAR;
+    public static MetaItem<?>.MetaValueItem CORN_EAR;
     public static MetaItem<?>.MetaValueItem PHYCOMYCES_BLAKESLEEANUS_CULTURE;
     public static MetaItem<?>.MetaValueItem THERMOS;
     public static MetaItem<?>.MetaValueItem THERMOS_CASING;
@@ -212,6 +214,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
     public static MetaItem<?>.MetaValueItem COFFEE_CHERRY;
     public static MetaItem<?>.MetaValueItem ENERGIZING_COFFEE_CUP;
     public static MetaItem<?>.MetaValueItem COFFEE_CUP;
+    public static MetaItem<?>.MetaValueItem PARACETAMOL_CAPLET;
 
     //juice
     public static MetaItem<?>.MetaValueItem ORANGE_JUICE;
@@ -246,6 +249,9 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
     public static MetaItem<?>.MetaValueItem PAPER_CONE;
     public static MetaItem<?>.MetaValueItem EMPTY_CUP;
     public static MetaItem<?>.MetaValueItem UNFIRED_CUP;
+    public static MetaItem<?>.MetaValueItem CAPLET_CAP;
+    public static MetaItem<?>.MetaValueItem CAPLET_BODY;
+    public static MetaItem<?>.MetaValueItem GEL_CAPLET;
 
     public static MetaItem<?>.MetaValueItem MUSHY_PEAS;
     public static MetaItem<?>.MetaValueItem PEA_POD;
@@ -268,22 +274,127 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
     public static MetaItem<?>.MetaValueItem NILK;
 
     public static MetaItem<?>.MetaValueItem SPRINKLER_COVER;
+    public static MetaItem<?>.MetaValueItem PLUTONIUM_241_CAPLET;
+    public static MetaItem<?>.MetaValueItem IV_BAG;
 
+    public static MetaItem<?>.MetaValueItem GARLIC_BULB;
+    public static MetaItem<?>.MetaValueItem GARLIC_CLOVE;
+    public static MetaItem<?>.MetaValueItem OREGANO;
+    public static MetaItem<?>.MetaValueItem OREGANO_SEED;
+    public static MetaItem<?>.MetaValueItem BASIL;
+    public static MetaItem<?>.MetaValueItem BASIL_SEED;
+    public static MetaItem<?>.MetaValueItem HORSERADISH;
+    public static MetaItem<?>.MetaValueItem HORSERADISH_SEED;
+    public static MetaItem<?>.MetaValueItem AUBERGINE;
+    public static MetaItem<?>.MetaValueItem AUBERGINE_SEED;
+
+    public static MetaItem<?>.MetaValueItem PASTA_DOUGH;
+    public static MetaItem<?>.MetaValueItem EGG_PASTA_DOUGH;
+    public static MetaItem<?>.MetaValueItem PREMIXED_PASTA_DOUGH;
+
+    public static MetaItem<?>.MetaValueItem BLANK_PASTA_DIE;
+    public static MetaItem<?>.MetaValueItem TAGLIATELLE_PASTA_DIE;
+    public static MetaItem<?>.MetaValueItem SPAGHETTI_PASTA_DIE;
+    public static MetaItem<?>.MetaValueItem LASAGNA_PASTA_DIE;
+    public static MetaItem<?>.MetaValueItem DITALINI_PASTA_DIE;
+    public static MetaItem<?>.MetaValueItem RIGATONI_PASTA_DIE;
+
+    public static MetaItem<?>.MetaValueItem RAW_TAGLIATELLE;
+    public static MetaItem<?>.MetaValueItem RAW_SPAGHETTI;
+    public static MetaItem<?>.MetaValueItem RAW_LASAGNA;
+    public static MetaItem<?>.MetaValueItem RAW_DITALINI;
+    public static MetaItem<?>.MetaValueItem RAW_RIGATONI;
+    public static MetaItem<?>.MetaValueItem DRIED_TAGLIATELLE;
+    public static MetaItem<?>.MetaValueItem DRIED_SPAGHETTI;
+    public static MetaItem<?>.MetaValueItem DRIED_LASAGNA;
+    public static MetaItem<?>.MetaValueItem DRIED_DITALINI;
+    public static MetaItem<?>.MetaValueItem DRIED_RIGATONI;
+    public static MetaItem<?>.MetaValueItem TORTELLINI;
+    public static MetaItem<?>.MetaValueItem TAGLIATELLE;
+    public static MetaItem<?>.MetaValueItem SPAGHETTI;
+    public static MetaItem<?>.MetaValueItem DITALINI;
+    public static MetaItem<?>.MetaValueItem RIGATONI;
+    public static MetaItem<?>.MetaValueItem ARTICHOKE_HEART;
+    public static MetaItem<?>.MetaValueItem ARTICHOKE_SEED;
+    public static MetaItem<?>.MetaValueItem BLACK_PEPPERCORN;
+    public static MetaItem<?>.MetaValueItem RICE;
+    public static MetaItem<?>.MetaValueItem NUTMEG_SEED;
+
+    public static MetaItem<?>.MetaValueItem BRUSCHETTA;
+    public static MetaItem<?>.MetaValueItem CAPONATA;
+    public static MetaItem<?>.MetaValueItem CARBONARA;
+    public static MetaItem<?>.MetaValueItem CARCIOFI_ALLA_ROMANA;
+    public static MetaItem<?>.MetaValueItem FETTUCCINE_ALFREDO;
+    public static MetaItem<?>.MetaValueItem PARMIGIANA;
+    public static MetaItem<?>.MetaValueItem PASTA_ALLA_NORMA;
+    public static MetaItem<?>.MetaValueItem PASTA_AL_POMODORO;
+    public static MetaItem<?>.MetaValueItem PASTA_E_FAGIOLI;
+    public static MetaItem<?>.MetaValueItem POLENTA;
+    public static MetaItem<?>.MetaValueItem RAFANATA;
+    public static MetaItem<?>.MetaValueItem RISOTTO;
+    public static MetaItem<?>.MetaValueItem SPAGHETTI_ALLASSASSINA;
+    public static MetaItem<?>.MetaValueItem TAGLIATELLE_AL_RAGU;
+    public static MetaItem<?>.MetaValueItem TORTELLINI_IN_BRODO;
+    public static MetaItem<?>.MetaValueItem VITELLO_TONNATO;
+    public static MetaItem<?>.MetaValueItem LASAGNA_CHUM;
+    public static MetaItem<?>.MetaValueItem LASAGNA_NAPOLETANA;
+    public static MetaItem<?>.MetaValueItem LASAGNA_PESTO;
+    public static MetaItem<?>.MetaValueItem PASTA_ALLAMOGUS;
+
+    public static MetaItem<?>.MetaValueItem CERAMIC_BOWL;
+    public static MetaItem<?>.MetaValueItem DIRTY_CERAMIC_BOWL;
+    public static MetaItem<?>.MetaValueItem PLATE;
+    public static MetaItem<?>.MetaValueItem DIRTY_PLATE;
+    public static MetaItem<?>.MetaValueItem BAKING_TRAY;
+
+    public static MetaItem<?>.MetaValueItem LASAGNA_CHUM_RAW;
+    public static MetaItem<?>.MetaValueItem LASAGNA_NAPOLETANA_RAW;
+    public static MetaItem<?>.MetaValueItem LASAGNA_PESTO_RAW;
+    public static MetaItem<?>.MetaValueItem LASAGNA_CHUM_COOKED;
+    public static MetaItem<?>.MetaValueItem LASAGNA_NAPOLETANA_COOKED;
+    public static MetaItem<?>.MetaValueItem LASAGNA_PESTO_COOKED;
+
+    public static MetaItem<?>.MetaValueItem PORCHETTA;
+    public static MetaItem<?>.MetaValueItem PORCHETTA_SLICE;
+
+    public static MetaItem<?>.MetaValueItem AGED_PARMIGIANO_ROLL;
+    public static MetaItem<?>.MetaValueItem BRINED_PARMIGIANO_ROLL;
+    public static MetaItem<?>.MetaValueItem BRINED_PARMIGIANO;
+    public static MetaItem<?>.MetaValueItem CURDLING_PARMIGIANO;
+    public static MetaItem<?>.MetaValueItem CHEESE_ROLL_FORM;
+    public static MetaItem<?>.MetaValueItem EGGPLANT_SLICE;
+    public static MetaItem<?>.MetaValueItem SEASONED_PORK;
+
+    public static MetaItem<?>.MetaValueItem RED_WINE;
+
+    public static MetaItem<?>.MetaValueItem WHITE_WINE;
+    public static MetaItem<?>.MetaValueItem WHITE_GRAPES;
+    public static MetaItem<?>.MetaValueItem WHITE_GRAPE_SEED;
+
+    public static MetaItem<?>.MetaValueItem UNFIRED_PLATE;
+    public static MetaItem<?>.MetaValueItem UNFIRED_BOWL;
+
+    public static MetaItem<?>.MetaValueItem EMERGENCY_RATIONS;
 
     public GTFOMetaItem() {
-        super();
+        super((short) 0);
+    }
+
+    @Override
+    protected GTFOMetaValueItem constructMetaValueItem(short metaValue, String unlocalizedName) {
+        return new GTFOMetaValueItem(metaValue, unlocalizedName);
     }
 
     @Override
     public void registerSubItems() {
         IItemContainerItemProvider selfContainerItemProvider = itemStack -> itemStack;
 
-
         PAPER_BAG = addItem(1, "component.bag");
-        FLAVORED_POPCORN_FLAKE = addItem(2, "component.popcorn.flavored_flake");
-        POPCORN_COB = addItem(3, "component.popcorn.cob");
-        DRIED_POPCORN_EAR = addItem(4, "component.popcorn.dried_ear");
-        POPCORN_EAR = addItem(5, "component.popcorn.ear");
+        FLAVORED_POPCORN_FLAKE = addItem(2, "component.corn.flavored_flake");
+        CORN_COB = addItem(3, "component.corn.cob");
+        DRIED_CORN_EAR = addItem(4, "component.corn.dried_ear");
+        CORN_EAR = addItem(5, "component.corn.ear");
+        CORN_EAR.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_CORN, BareCornKernel.getItemStack(), CORN_EAR.getStackForm()));
         //PHYCOMYCES_BLAKESLEEANUS_CULTURE = addItem(6, "culture.phycomyces");
 
         THERMOS = addItem(7, "component.thermos.new");
@@ -313,8 +424,10 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         FRIED_POTATO_STRIP = addItem(35, "component.potato.fried_strip");
         USED_PAPER_BAG = addItem(36, "component.bag_used");
 
-        MUD_BRICK = addItem(43, "brick.adobe");
-        ADOBE_BRICK = addItem(44, "brick.adobe_fired");
+        MUD_BRICK = addItem(43, "brick.adobe").addComponents(new GTFOFoodStats(0, 0,false,true).setEatingDuration(100)
+                .setPotionEffects(new RandomPotionEffect(MobEffects.POISON, 400, 0, 100 - 50)));
+        ADOBE_BRICK = addItem(44, "brick.adobe_fired")
+                .addComponents(new GTFOFoodStats(0, 0,false,true).setEatingDuration(400));
 
         WOODEN_FORM_BREAD = addItem(45, "wooden_form.bread").addComponents(selfContainerItemProvider);
         WOODEN_FORM_BAGUETTE = addItem(46, "wooden_form.baguette").addComponents(selfContainerItemProvider);
@@ -333,24 +446,39 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         PIZZA_MINCE_MEAT_RAW = addItem(61, "component.pizza.mince_meat");
 
         OLIVE = addItem(73, "crop.olive")
-                .addOreDict("cropOlive");
-        OLIVE_SLICE = addItem(74, "component.olive_slice");
-        MUSHROOM_SLICE = addItem(75, "component.mushroom_slice");
+                .addOreDict("cropOlive")
+                .addComponents(new GTFOFoodStats(2, 0.5f).setEatingDuration(64));
+        OLIVE_SLICE = addItem(74, "component.olive_slice")
+                .addComponents(new GTFOFoodStats(1, 1f));
+        MUSHROOM_SLICE = addItem(75, "component.mushroom_slice")
+                .addComponents(new GTFOFoodStats(1, 1f));
 
         TOMATO = addItem(76, "crop.tomato")
-                .addOreDict("cropTomato");
+                .addOreDict("cropTomato")
+                .addComponents(new GTFOFoodStats(3, 0.5f)
+                        .setEatingDuration(72));
         ONION = addItem(77, "crop.onion")
-                .addOreDict("cropOnion");
+                .addOreDict("cropOnion")
+                .addComponents(new GTFOFoodStats(3, 0.33f)
+                        .setEatingDuration(128));
         CUCUMBER = addItem(78, "crop.cucumber")
-                .addOreDict("cropCucumber");
-        CUCUMBER.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_TOMATO, CUCUMBER.getStackForm(), CUCUMBER.getStackForm()));
+                .addOreDict("cropCucumber")
+                .addComponents(new GTFOFoodStats(2, 0.5f)
+                        .setEatingDuration(64));
+        CUCUMBER.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_CUCUMBER, CUCUMBER.getStackForm(), CUCUMBER.getStackForm()));
 
         WOODEN_FORM_BUN = addItem(82, "wooden_form.bun").addComponents(selfContainerItemProvider);
         UNCOOKED_BUN = addItem(83, "component.bun");
 
-        PRESLICED_BUN = addItem(84, "component.buns");
-        PRESLICED_BREAD = addItem(85, "component.breads");
-        PRESLICED_BAGUETTE = addItem(86, "component.baguettes");
+        PRESLICED_BUN = addItem(84, "component.buns")
+                .addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.baguetteHunger / 3, GTFOConfig.gtfoFoodConfig.baguetteSaturation)
+                        .setEatingDuration(20));
+        PRESLICED_BREAD = addItem(85, "component.breads")
+                .addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.baguetteHunger * 2 / 3, GTFOConfig.gtfoFoodConfig.baguetteSaturation)
+                        .setEatingDuration(20));
+        PRESLICED_BAGUETTE = addItem(86, "component.baguettes")
+                .addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.baguetteHunger * 2 / 3, GTFOConfig.gtfoFoodConfig.baguetteSaturation)
+                        .setEatingDuration(20));
 
         BEEF_SLICE = addItem(91, "component.beef_slice");
         CHEDDAR_CURD_MOLD = addItem(92, "component.cheddar_curd_mold");
@@ -399,17 +527,75 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         BEANS_WITH_SAUCE = addItem(221, "component.beans_with_sauce");
         UNCOOKED_SAUSAGE_ROLL = addItem(223, "component.uncooked_sausage_roll");
 
+        GARLIC_BULB = addItem(308, "component.garlic_bulb");
+        AUBERGINE = addItem(309, "crop.aubergine");
+        HORSERADISH = addItem(233, "component.horseradish");
+        BASIL = addItem(234, "component.basil");
+        OREGANO = addItem(235, "component.oregano");
+
+        CAPLET_CAP = addItem(227, "component.caplet_cap");
+        CAPLET_BODY = addItem(228, "component.caplet_body");
+        IV_BAG = addItem(232, "component.iv_bag");
+
+        PASTA_DOUGH = addItem(243, "component.dough.pasta");
+        EGG_PASTA_DOUGH = addItem(244, "component.dough.egg_pasta");
+        PREMIXED_PASTA_DOUGH = addItem(245, "component.dough.premixed_pasta");
+
+        RAW_TAGLIATELLE = addItem(252, "component.pasta.raw.tagliatelle");
+        RAW_SPAGHETTI = addItem(253, "component.pasta.raw.spaghetti");
+        RAW_LASAGNA = addItem(254, "component.pasta.raw.lasagna");
+        RAW_DITALINI = addItem(255, "component.pasta.raw.ditalini");
+        RAW_RIGATONI = addItem(256, "component.pasta.raw.rigatoni");
+        DRIED_TAGLIATELLE = addItem(257, "component.pasta.dried.tagliatelle");
+        DRIED_SPAGHETTI = addItem(258, "component.pasta.dried.spaghetti");
+        DRIED_LASAGNA = addItem(259, "component.pasta.dried.lasagna");
+        DRIED_DITALINI = addItem(260, "component.pasta.dried.ditalini");
+        DRIED_RIGATONI = addItem(261, "component.pasta.dried.rigatoni");
+        TAGLIATELLE = addItem(262, "component.pasta.tagliatelle");
+        SPAGHETTI = addItem(263, "component.pasta.spaghetti");
+        DITALINI = addItem(264, "component.pasta.ditalini");
+        RIGATONI = addItem(265, "component.pasta.rigatoni");
+
+        TORTELLINI = addItem(266, "component.pasta.tortellini");
+
+        PLATE = addItem(291, "component.plate");
+        DIRTY_PLATE = addItem(292, "component.dirty_plate");
+        CERAMIC_BOWL = addItem(293, "component.ceramic_bowl");
+        DIRTY_CERAMIC_BOWL = addItem(294, "component.dirty_bowl");
+        BAKING_TRAY = addItem(302, "component.baking_tray");
+
+        LASAGNA_CHUM_RAW = addItem(296, "component.pasta.lasagna.raw.chum");
+        LASAGNA_NAPOLETANA_RAW = addItem(297, "component.pasta.lasagna.raw.napoletana");
+        LASAGNA_PESTO_RAW = addItem(298, "component.pasta.lasagna.raw.pesto");
+        LASAGNA_CHUM_COOKED = addItem(299, "component.pasta.lasagna.cooked.chum");
+        LASAGNA_NAPOLETANA_COOKED = addItem(300, "component.pasta.lasagna.cooked.napoletana");
+        LASAGNA_PESTO_COOKED = addItem(301, "component.pasta.lasagna.cooked.pesto");
+
+        PORCHETTA = addItem(310, "component.porchetta")
+                .addComponents(new GTFOFoodStats(7, 0.7f).setEatingDuration(50));
+
+        AGED_PARMIGIANO_ROLL = addItem(312, "component.aged_parmigiano_roll");
+        BRINED_PARMIGIANO = addItem(313, "component.brined_parmigiano");
+        BRINED_PARMIGIANO_ROLL = addItem(314, "component.brined_parmigiano_roll");
+        CURDLING_PARMIGIANO = addItem(315, "component.curdling_parmigiano");
+        CHEESE_ROLL_FORM = addItem(316, "component.cheese_form");
+
+        SEASONED_PORK = addItem(318, "component.seasoned_pork");
+
+        UNFIRED_PLATE = addItem(322, "component.unfired_plate");
+        UNFIRED_BOWL = addItem(323, "component.unfired_bowl");
+
         POPCORN_BAG = addItem(0, "food.popcorn_bag").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.popcornHunger, GTFOConfig.gtfoFoodConfig.popcornSaturation, false, true, PAPER_BAG.getStackForm(1),
                 new RandomPotionEffect(getPotionById(10), 300, 1, 0)));
         MINERAL_WATER = addItem(12, "food.mineral_water").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.mineralWaterHunger, GTFOConfig.gtfoFoodConfig.mineralWaterSaturation, true, true, USED_THERMOS.getStackForm(1),
-                new RandomPotionEffect(CreativityPotion.instance, 5000, 0, 0)));
+                new RandomPotionEffect(CreativityPotion.INSTANCE, 5000, 0, 0)));
         APPLE_HARD_CANDY = addItem(14, "food.apple_hard_candy").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.hardCandyHunger, GTFOConfig.gtfoFoodConfig.hardCandySaturation, true, false, ItemStack.EMPTY,
                 new RandomPotionEffect(MobEffects.REGENERATION, 1200, 1, 50))
                 .setEatingDuration(24));
         SPARKLING_WATER = addItem(16, "food.sparkling_water").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.sparklingWaterHunger, GTFOConfig.gtfoFoodConfig.sparklingWaterSaturation, true, false, PLASTIC_BOTTLE.getStackForm(),
                 new RandomPotionEffect(MobEffects.SPEED, 600, 1, 0)));
         LEMON = addItem(17, "food.lemon").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.lemonHunger, GTFOConfig.gtfoFoodConfig.lemonSaturation))
-                .addOreDict("cropLemon").addOreDict("listAllfruit");
+                .addOreDict("cropLemon").addOreDict("listAllfruit").addComponents();
         LIME = addItem(18, "food.lime").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.limeHunger, GTFOConfig.gtfoFoodConfig.limeSaturation))
                 .addOreDict("cropLime").addOreDict("listAllfruit");
         ETIRPS = addItem(19, "food.etirps").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.etirpsHunger, GTFOConfig.gtfoFoodConfig.etirpsSaturation, true, false, PLASTIC_BOTTLE.getStackForm(),
@@ -441,7 +627,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
                 .setMaxStackSize(16);
 
         BAGUETTE = addItem(51, "food.baguette").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.baguetteHunger, GTFOConfig.gtfoFoodConfig.baguetteSaturation, false, false, ItemStack.EMPTY,
-                new RandomPotionEffect(MobEffects.HASTE, 1200, 1, 50))
+                new RandomPotionEffect(MobEffects.HASTE, 1200, 0, 50))
                 .setEatingDuration(40));
         TUNGSTENSTEEL_APPLE = addItem(54, "food.tungstensteel_apple").addComponents(new GTFOFoodStats(3, 1f, false, false, ItemStack.EMPTY,
                 new RandomPotionEffect(MobEffects.SPEED, 1200, 2, 0),
@@ -454,23 +640,23 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
                 .setEatingDuration(60));
         BAKED_CAKE_BOTTOM = addItem(57, "food.cake_bottom_baked").addComponents(new GTFOFoodStats(3, 0.5f));
 
-        PIZZA_CHEESE = addItem(62, "food.pizza.cheese").addComponents(new GTFOFoodStats(5, 0.8f, false, false, ItemStack.EMPTY,
+        PIZZA_CHEESE = addItem(62, "food.pizza.cheese").addComponents(new GTFOFoodStats(10, 0.8f, false, false, ItemStack.EMPTY,
                 new RandomPotionEffect(MobEffects.HASTE, 2000, 2, 0))
                 .setEatingDuration(50));
-        PIZZA_VEGGIE = addItem(63, "food.pizza.veggie").addComponents(new GTFOFoodStats(5, 0.7f, false, false, ItemStack.EMPTY,
-                new RandomPotionEffect(StepAssistPotion.instance, 2000, 1, 0))
+        PIZZA_VEGGIE = addItem(63, "food.pizza.veggie").addComponents(new GTFOFoodStats(10, 0.7f, false, false, ItemStack.EMPTY,
+                new RandomPotionEffect(StepAssistPotion.INSTANCE, 2000, 1, 0))
                 .setEatingDuration(50));
-        PIZZA_MINCE_MEAT = addItem(64, "food.pizza.mince_meat").addComponents(new GTFOFoodStats(6, 0.8f, false, false, ItemStack.EMPTY,
+        PIZZA_MINCE_MEAT = addItem(64, "food.pizza.mince_meat").addComponents(new GTFOFoodStats(11, 0.8f, false, false, ItemStack.EMPTY,
                 new RandomPotionEffect(MobEffects.STRENGTH, 2000, 2, 0))
                 .setEatingDuration(50));
 
-        SANDWICH_VEGGIE = addItem(65, "food.sandwich.veggie").addComponents(new GTFOFoodStats(4, 0.6f)
+        SANDWICH_VEGGIE = addItem(65, "food.sandwich.veggie").addComponents(new GTFOFoodStats(6, 0.6f)
                 .setEatingDuration(40));
-        SANDWICH_CHEESE = addItem(66, "food.sandwich.cheese").addComponents(new GTFOFoodStats(5, 0.6f)
+        SANDWICH_CHEESE = addItem(66, "food.sandwich.cheese").addComponents(new GTFOFoodStats(6, 0.6f)
                 .setEatingDuration(40));
-        SANDWICH_BACON = addItem(67, "food.sandwich.bacon").addComponents(new GTFOFoodStats(5, 0.7f)
+        SANDWICH_BACON = addItem(67, "food.sandwich.bacon").addComponents(new GTFOFoodStats(6, 0.7f)
                 .setEatingDuration(40));
-        SANDWICH_STEAK = addItem(68, "food.sandwich.steak").addComponents(new GTFOFoodStats(6, 0.7f)
+        SANDWICH_STEAK = addItem(68, "food.sandwich.steak").addComponents(new GTFOFoodStats(7, 0.7f)
                 .setEatingDuration(40));
 
         SANDWICH_LARGE_VEGGIE = addItem(69, "food.sandwich.veggie.large").addComponents(new GTFOFoodStats(9, 0.6f)
@@ -478,7 +664,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         SANDWICH_LARGE_CHEESE = addItem(70, "food.sandwich.cheese.large").addComponents(new GTFOFoodStats(11, 0.6f)
                 .setEatingDuration(60));
         SANDWICH_LARGE_BACON = addItem(71, "food.sandwich.bacon.large").addComponents(new GTFOFoodStats(10, 0.7f, false, false, ItemStack.EMPTY,
-                new RandomPotionEffect(StepAssistPotion.instance, 600, 0, 0))
+                new RandomPotionEffect(StepAssistPotion.INSTANCE, 600, 0, 0))
                 .setEatingDuration(60));
         SANDWICH_LARGE_STEAK = addItem(72, "food.sandwich.steak.large").addComponents(new GTFOFoodStats(13, 0.7f)
                 .setEatingDuration(60));
@@ -486,11 +672,12 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         BUN = addItem(87, "food.bun").addComponents(new GTFOFoodStats(GTFOConfig.gtfoFoodConfig.baguetteHunger / 3, GTFOConfig.gtfoFoodConfig.baguetteSaturation)
                 .setEatingDuration(25));
 
-        BURGER_VEGGIE = addItem(88, "food.burger.veggie").addComponents(new GTFOFoodStats(3, 0.6f));
+        BURGER_VEGGIE = addItem(88, "food.burger.veggie").addComponents(new GTFOFoodStats(4, 0.6f));
         BURGER_CHEESE = addItem(89, "food.burger.cheese").addComponents(new GTFOFoodStats(4, 0.6f));
         BURGER_MEAT = addItem(90, "food.burger.meat").addComponents(new GTFOFoodStats(4, 0.7f));
 
-        CHEDDAR_SLICE = addItem(97, "food.cheddar_slice").addComponents(new GTFOFoodStats(2, 0.2f))
+        CHEDDAR_SLICE = addItem(97, "food.cheddar_slice").addComponents(new GTFOFoodStats(2, 0.2f)
+                        .setEatingDuration(20))
                 .addOreDict("foodCheese");
         MOZZARELLA_BALL = addItem(98, "food.mozzarella_ball").addComponents(new GTFOFoodStats(3, 0.6f))
                 .addOreDict("foodCheese");
@@ -518,8 +705,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         ORANGE = addItem(123, "food.orange").addComponents(new GTFOFoodStats(2, 1f)
                         .setEatingDuration(50))
                 .addOreDict("cropOrange").addOreDict("listAllfruit");
-        GRAPES = addItem(124, "food.grapes").addComponents(new GTFOFoodStats(1, 1f)
-                        .setEatingDuration(20))
+        GRAPES = addItem(124, "food.grapes").addComponents(new GTFOFoodStats(1, 1f))
                 .addOreDict("cropGrapes").addOreDict("listAllfruit");
         MANGO = addItem(125, "food.mango").addComponents(new GTFOFoodStats(2, 1f))
                 .addOreDict("cropMango").addOreDict("listAllfruit");
@@ -535,18 +721,18 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
                 new RandomPotionEffect(MobEffects.NAUSEA, 500, 2, 70),
                 new RandomPotionEffect(MobEffects.SPEED, 500, 2, 0)));
 
-        HOT_MUSHROOM_STEW = addItem(131, "food.mushroom_stew.hot").addComponents(new GTFOFoodStats(8, 1f, false, false, new ItemStack(Items.BOWL))
+        HOT_MUSHROOM_STEW = addItem(131, "food.mushroom_stew.hot").setMaxStackSize(1).addComponents(new GTFOFoodStats(8, 1f, false, false, new ItemStack(Items.BOWL))
                 .setEatingDuration(60));
-        HOT_BEETROOT_SOUP = addItem(132, "food.beetroot_soup.hot").addComponents(new GTFOFoodStats(7, 1f, false, false, new ItemStack(Items.BOWL))
+        HOT_BEETROOT_SOUP = addItem(132, "food.beetroot_soup.hot").setMaxStackSize(1).addComponents(new GTFOFoodStats(7, 1f, false, false, new ItemStack(Items.BOWL))
                 .setEatingDuration(60));
-        HOT_RABBIT_STEW = addItem(133, "food.rabbit_stew.hot").addComponents(new GTFOFoodStats(9, 0.9f, false, false, new ItemStack(Items.BOWL))
+        HOT_RABBIT_STEW = addItem(133, "food.rabbit_stew.hot").setMaxStackSize(1).addComponents(new GTFOFoodStats(9, 0.9f, false, false, new ItemStack(Items.BOWL))
                 .setEatingDuration(60));
 
         KEBAB_KUBIDEH_COOKED = addItem(137, "food.kebab.kubide").addComponents(GTFOUtils.getKebabFood(6, 0.8f));
         KEBAB_BARG_COOKED = addItem(139, "food.kebab.barg").addComponents(GTFOUtils.getKebabFood(6, 0.5f));
         KEBAB_SOLTANI = addItem(140, "food.kebab.soltani").addComponents(GTFOUtils.getKebabFood(16, 1.1f));
-        KEBAB_ONION_COOKED = addItem(142, "food.kebab.onion").addComponents(GTFOUtils.getKebabFood(2, 0.1f));
-        KEBAB_TOMATO_COOKED = addItem(144, "food.kebab.tomato").addComponents(GTFOUtils.getKebabFood(2, 0.1f));
+        KEBAB_ONION_COOKED = addItem(142, "food.kebab.onion").addComponents(GTFOUtils.getKebabFood(5, 0.3f));
+        KEBAB_TOMATO_COOKED = addItem(144, "food.kebab.tomato").addComponents(GTFOUtils.getKebabFood(5, 0.3f));
         KEBAB_CHUM_COOKED = addItem(146, "food.kebab.chum").addComponents(new GTFOFoodStats(6, 0.3f, false, true, SKEWER.getStackForm(1),
                 new RandomPotionEffect(MobEffects.NAUSEA, 100, 10, 100 - 10))
                 .setEatingDuration(12));
@@ -556,14 +742,15 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
                 new RandomPotionEffect(MobEffects.SPEED, 500, 3, 100 - 50),
                 new RandomPotionEffect(MobEffects.HEALTH_BOOST, 500, 3, 100 - 50))
                 .setEatingDuration(12));
-        KEBAB_CARROT_COOKED = addItem(154, "food.kebab.carrot").addComponents(GTFOUtils.getKebabFood(2, 0.2f));
-        KEBAB_FAT_COOKED = addItem(151, "food.kebab.fat").addComponents(GTFOUtils.getKebabFood(3, 0.3f));
+        KEBAB_CARROT_COOKED = addItem(154, "food.kebab.carrot").addComponents(GTFOUtils.getKebabFood(4, 0.5f));
+        KEBAB_FAT_COOKED = addItem(151, "food.kebab.fat").addComponents(GTFOUtils.getKebabFood(4, 0.3f));
 
         TOMATO_SLICE = addItem(79, "component.tomato_slice").addComponents(new GTFOFoodStats(1, 0.0f));
         ONION_SLICE = addItem(80, "component.onion_slice").addComponents(new GTFOFoodStats(1, 0.0f));
         CUCUMBER_SLICE = addItem(81, "component.cucumber_slice").addComponents(new GTFOFoodStats(1, 0.0f));
         CARROT_SLICE = addItem(148, "component.carrot_slice").addComponents(new GTFOFoodStats(1, 0.0f));
         APPLE_SLICE = addItem(152, "component.apple_slice").addComponents(new GTFOFoodStats(1, 0.1f));
+        EGGPLANT_SLICE = addItem(317, "component.eggplant_slice").addComponents(new GTFOFoodStats(1, 0.0f));
 
         APPLE_JUICE = addItem(153, "food.juice.apple").addComponents(new GTFOFoodStats(3, 0.2f, true, true, new ItemStack(Items.GLASS_BOTTLE),
                 new RandomPotionEffect(MobEffects.SPEED, 500, 1, 100 - 45)));
@@ -576,7 +763,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         ICE_CREAM_BANANA = addItem(167, "food.ice_cream.banana").addComponents(new GTFOFoodStats(6, 0.33f, false, true));
         ICE_CREAM_BACON = addItem(168, "food.ice_cream.bacon").addComponents(new GTFOFoodStats(6, 0.33f, false, true));
         ICE_CREAM_VANILLA = addItem(169, "food.ice_cream.vanilla").addComponents(new GTFOFoodStats(9, 0.25f, false, true, ItemStack.EMPTY,
-                new RandomPotionEffect(SnowGolemSpawnerPotion.instance, 300, 0, 100 - 50)));
+                new RandomPotionEffect(SnowGolemSpawnerPotion.INSTANCE, 300, 0, 100 - 50)));
         ICE_CREAM_BEAR = addItem(170, "food.ice_cream.bear").addComponents(new GTFOFoodStats(7, 0.33f, false, true));
         ICE_CREAM_MELON = addItem(171, "food.ice_cream.melon").addComponents(new GTFOFoodStats(5, 0.33f, false, true));
         ICE_CREAM_CHOCOLATE = addItem(172, "food.ice_cream.chocolate").addComponents(new GTFOFoodStats(9, 0.25f, false, true));
@@ -592,8 +779,12 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         FOURSMORE_QUADSMINGOT = addItem(194, "food.smore.four").addComponents(new GTFOFoodStats(44, 8.61363636364f));
         MARSHMALLOW = addItem(195, "food.marshmallow").addComponents(new GTFOFoodStats(1, 1f));
 
-        COFFEE_CUP = addItem(203, "food.coffee.normal").addComponents(new GTFOFoodStats(8, 5f, true, false, EMPTY_CUP.getStackForm(), new RandomPotionEffect(MobEffects.REGENERATION, 60, 1, 0), new RandomPotionEffect(MobEffects.SPEED, 1800, 2, 0)));
-        ENERGIZING_COFFEE_CUP = addItem(204, "food.coffee.energized").addComponents(new GTFOFoodStats(8, 5f, true, false, EMPTY_CUP.getStackForm(), new RandomPotionEffect(MobEffects.REGENERATION, 200, 3, 0), new RandomPotionEffect(MobEffects.STRENGTH, 200, 2, 0), new RandomPotionEffect(MobEffects.RESISTANCE, 200, 2, 0), new RandomPotionEffect(MobEffects.SPEED, 1000, 4, 0)));
+        COFFEE_CUP = addItem(203, "food.coffee.normal").addComponents(new GTFOFoodStats(8, 0.4f, true, false, EMPTY_CUP.getStackForm(), new RandomPotionEffect(MobEffects.REGENERATION, 60, 1, 0), new RandomPotionEffect(MobEffects.SPEED, 1800, 2, 0)));
+        ENERGIZING_COFFEE_CUP = addItem(204, "food.coffee.energized").addComponents(new GTFOFoodStats(8, 0.6f, true, false, EMPTY_CUP.getStackForm(),
+                new RandomPotionEffect(MobEffects.REGENERATION, 200, 3, 0),
+                new RandomPotionEffect(MobEffects.STRENGTH, 200, 1, 0),
+                new RandomPotionEffect(MobEffects.RESISTANCE, 200, 1, 0),
+                new RandomPotionEffect(MobEffects.SPEED, 1000, 3, 0)));
 
         MUSHY_PEAS = addItem(209, "food.mushy_peas").addComponents(new GTFOFoodStats(3, 1));
         BREAD_SLICE = addItem(210, "food.bread_slice").addComponents(new GTFOFoodStats(1, 0.5f));
@@ -606,7 +797,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         SAUSAGE_ROLL = addItem(216, "food.sausage_roll").addComponents(new GTFOFoodStats(7, 0.7f));
         BAKED_BEANS = addItem(217, "food.baked_beans").addComponents(new GTFOFoodStats(4, 1f));
         BEANS_ON_TOAST = addItem(218, "food.beans_on_toast").addComponents(new GTFOFoodStats(7, 0.8f, false, false, ItemStack.EMPTY,
-                new RandomPotionEffect(MobEffects.SATURATION, 500, 0, 100 - 20)));
+                new RandomPotionEffect(MobEffects.SATURATION, 40, 0, 100 - 20)));
         FRIED_FISH = addItem(219, "food.fried_fish").addComponents(new GTFOFoodStats(4, 0.3f));
         BEER = addItem(220, "food.beer").addComponents(new GTFOFoodStats(2, 0.5f, true, true, new ItemStack(Items.GLASS_BOTTLE),
                 new RandomPotionEffect(MobEffects.NAUSEA, 500, 0, 100 - 40)));
@@ -616,6 +807,63 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
                 new RandomPotionEffect(MobEffects.NAUSEA, 1000, 0, 100 - 80),
                 new RandomPotionEffect(MobEffects.REGENERATION, 200, 2, 100 - 60)));
 
+        GEL_CAPLET = addItem(229, "food.gel_caplet");
+        PARACETAMOL_CAPLET = addItem(230, "food.paracetamol_caplet").addComponents(new GTFOFoodStats(0, 1f, false, true, ItemStack.EMPTY, new RandomPotionEffect(MobEffects.REGENERATION, 400, 0, 0)).setEatingDuration(1));
+        PLUTONIUM_241_CAPLET = addItem(231, "food.plutonium_241_caplet").addComponents(new GTFOFoodStats(0, 1f, false, true, ItemStack.EMPTY, new RandomPotionEffect(MobEffects.POISON, 7000, 0, 0)).setEatingDuration(1));
+
+        BRUSCHETTA = addItem(272, "food.bruschetta").addComponents(new GTFOFoodStats(6, 0.5f)
+                .setPotionEffects(new RandomPotionEffect(PotionAmplifierPotion.INSTANCE, 200, 0, 100 - 75))); // I mean, you can technically hold this without a plate
+        CAPONATA = addItem(273, "food.caponata").addComponents(new GTFOFoodStats(6, 0.9f).setReturnStack(DIRTY_CERAMIC_BOWL.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(PotionLengthenerPotion.INSTANCE, 200, 0, 100 - 75)));
+        CARBONARA = addItem(274, "food.carbonara").addComponents(new GTFOFoodStats(9, 0.8f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.HEALTH_BOOST, 1000, 0, 100 - 75)));
+        CARCIOFI_ALLA_ROMANA = addItem(275, "food.carciofi_alla_romana").addComponents(new GTFOFoodStats(8, 1.3f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.STRENGTH, 1500, 1, 100 - 95)));
+        FETTUCCINE_ALFREDO = addItem(276, "food.fettuccine_alfredo").addComponents(new GTFOFoodStats(8, 0.4f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.RESISTANCE, 1500, 1, 100 - 80))
+                .setEatingDuration(20));
+        PARMIGIANA = addItem(277, "food.parmigiana").addComponents(new GTFOFoodStats(8, 1.1f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.REGENERATION, 500, 0, 100 - 75)));
+        PASTA_E_FAGIOLI = addItem(278, "food.pasta_e_fagioli").addComponents(new GTFOFoodStats(4, 2.5f).setReturnStack(DIRTY_CERAMIC_BOWL.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.HASTE, 3000, 1, 100 - 75)));
+        PASTA_ALLA_NORMA = addItem(279, "food.pasta_alla_norma").addComponents(new GTFOFoodStats(12, 0.7f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setEatingDuration(128));
+        PASTA_AL_POMODORO = addItem(280, "food.pasta_al_pomodoro").addComponents(new GTFOFoodStats(5, 0.5f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(PotionAmplifierPotion.INSTANCE, 160, 1, 100 - 50)).setEatingDuration(16));
+        POLENTA = addItem(281, "food.polenta").addComponents(new GTFOFoodStats(6, 0.4f).setReturnStack(DIRTY_CERAMIC_BOWL.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.SATURATION, 40, 0, 100 - 50)));
+        RAFANATA = addItem(282, "food.rafanata").addComponents(new GTFOFoodStats(7, 1f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.JUMP_BOOST, 500, 0, 100 - 80)));
+        RISOTTO = addItem(283, "food.risotto").addComponents(new GTFOFoodStats(10, 0.8f).setReturnStack(DIRTY_CERAMIC_BOWL.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.SPEED, 8000, 1, 100)));
+        SPAGHETTI_ALLASSASSINA = addItem(284, "food.spaghetti_all'assassina").addComponents(new GTFOFoodStats(6, 0.8f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.STRENGTH, 60, 10, 100 - 60)));
+        TAGLIATELLE_AL_RAGU = addItem(285, "food.tagliatelle_al_ragu").addComponents(new GTFOFoodStats(10, 0.7f).setReturnStack(DIRTY_PLATE.getStackForm()));
+        TORTELLINI_IN_BRODO = addItem(286, "food.tortellini_in_brodo").addComponents(new GTFOFoodStats(10, 0.5f).setReturnStack(DIRTY_CERAMIC_BOWL.getStackForm()));
+        VITELLO_TONNATO = addItem(287, "food.vitello_tonnato").addComponents(new GTFOFoodStats(10, 1f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(PotionLengthenerPotion.INSTANCE, 400, 1, 100 - 90), new RandomPotionEffect(PotionAmplifierPotion.INSTANCE, 400, 0, 100 - 90)));
+        LASAGNA_CHUM = addItem(288, "food.lasagna.chum").addComponents(new GTFOFoodStats(9, 0.7f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.LUCK, 3000, 0, 100 - 80)).setEatingDuration(64));
+        LASAGNA_NAPOLETANA = addItem(289, "food.lasagna.napoletana").addComponents(new GTFOFoodStats(8, 0.7f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.NIGHT_VISION, 3000, 0, 100 - 90)).setEatingDuration(64));
+        LASAGNA_PESTO = addItem(290, "food.lasagna.pesto").addComponents(new GTFOFoodStats(8, 0.7f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(MobEffects.FIRE_RESISTANCE, 3000, 0, 100 - 90)).setEatingDuration(64));
+        PASTA_ALLAMOGUS = addItem(295, "food.pasta_all'amogus").addComponents(new GTFOFoodStats(5, 0.1f).setReturnStack(DIRTY_PLATE.getStackForm())
+                .setPotionEffects(new RandomPotionEffect(VentingPotion.INSTANCE, 400, 0, 100 - 50)));
+
+        PORCHETTA_SLICE = addItem(311, "food.porchetta_slice").addComponents(new GTFOFoodStats(2, 0.7f).setEatingDuration(5));
+
+        WHITE_WINE = addItem(319, "food.white_wine").addComponents(new GTFOFoodStats(6, 0.7f, true, true, new ItemStack(Items.GLASS_BOTTLE),
+                new RandomPotionEffect(MobEffects.NAUSEA, 600, 0, 100 - 60),
+                new RandomPotionEffect(MobEffects.ABSORPTION, 400, 1, 100 - 40))
+                .setEatingDuration(96));
+        RED_WINE = addItem(324, "food.red_wine").addComponents(new GTFOFoodStats(4, 0.7f, true, true, new ItemStack(Items.GLASS_BOTTLE),
+                new RandomPotionEffect(MobEffects.NAUSEA, 600, 0, 100 - 60),
+                new RandomPotionEffect(MobEffects.RESISTANCE, 400, 0, 100 - 40))
+                .setEatingDuration(96));
+
+        EMERGENCY_RATIONS = addItem(325, "food.emergency_rations").addComponents(new GTFOFoodStats(5, 1.0f, false, true)
+                .setPotionEffects(new RandomPotionEffect(MobEffects.NAUSEA, 400, 0, 100 - 10)).setEatingDuration(60));
 
         UNKNOWN_SEED = addItem(158, "seed.unknown");
         ONION_SEED = addItem(159, "seed.onion");
@@ -636,11 +884,40 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
         PEAS.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_PEA, PEAS.getStackForm(), PEA_POD.getStackForm()));
         BEANS = addItem(208, "seed.bean");
         BEANS.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_BEAN, BEANS.getStackForm(), BEANS.getStackForm()));
+        OREGANO_SEED = addItem(303, "seed.oregano");
+        OREGANO_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_OREGANO, OREGANO_SEED.getStackForm(), OREGANO.getStackForm()));
+        BASIL_SEED = addItem(304, "seed.basil");
+        BASIL_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_BASIL, BASIL_SEED.getStackForm(), BASIL.getStackForm()));
+        AUBERGINE_SEED = addItem(305, "seed.aubergine");
+        AUBERGINE_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_AUBERGINE, AUBERGINE_SEED.getStackForm(), AUBERGINE.getStackForm()));
+        HORSERADISH_SEED = addItem(306, "seed.horseradish");
+        HORSERADISH_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_HORSERADISH, HORSERADISH_SEED.getStackForm(), HORSERADISH.getStackForm()));
+        GARLIC_CLOVE = addItem(307, "seed.garlic");
+        GARLIC_CLOVE.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_GARLIC, GARLIC_CLOVE.getStackForm(), GARLIC_BULB.getStackForm()));
+        HORSERADISH_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_HORSERADISH, HORSERADISH_SEED.getStackForm(), HORSERADISH.getStackForm()));
+        ARTICHOKE_HEART = addItem(267, "component.artichoke");
+        ARTICHOKE_SEED = addItem(268, "seed.artichoke");
+        ARTICHOKE_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_ARTICHOKE, ARTICHOKE_SEED.getStackForm(), ARTICHOKE_HEART.getStackForm()));
+        BLACK_PEPPERCORN = addItem(269, "component.black_pepper");
+        BLACK_PEPPERCORN.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_BLACK_PEPPER, BLACK_PEPPERCORN.getStackForm(), BLACK_PEPPERCORN.getStackForm()));
+        RICE = addItem(270, "component.rice");
+        RICE.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_RICE, RICE.getStackForm(), RICE.getStackForm()));
+        NUTMEG_SEED = addItem(271, "component.nutmeg");
+        WHITE_GRAPES = addItem(320, "food.white_grapes").addComponents(new GTFOFoodStats(1, 1f));
+        WHITE_GRAPE_SEED = addItem(321, "seed.white_grape");
+        WHITE_GRAPE_SEED.addComponents(new GTFOCropSeedBehaviour(GTFOCrops.CROP_WHITE_GRAPE, WHITE_GRAPE_SEED.getStackForm(), WHITE_GRAPES.getStackForm()));
 
 
         // 175-189 left blank for organic circuits
-
         SPRINKLER_COVER = addItem(224, "cover.sprinkler");
+
+        BLANK_PASTA_DIE = addItem(246, "shape.pasta.blank");
+        TAGLIATELLE_PASTA_DIE = addItem(247, "shape.pasta.tagliatelle");
+        SPAGHETTI_PASTA_DIE = addItem(248, "shape.pasta.spaghetti");
+        DITALINI_PASTA_DIE = addItem(249, "shape.pasta.ditalini");
+        RIGATONI_PASTA_DIE = addItem(250, "shape.pasta.rigatoni");
+        LASAGNA_PASTA_DIE = addItem(251, "shape.pasta.lasagna");
+
 
         {
             int heal = 44;
@@ -682,7 +959,7 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
     }
 
 
-    protected String formatModelPath(MetaItem<?>.MetaValueItem metaValueItem) {
+    protected String formatModelPath(GTFOMetaItem.GTFOMetaValueItem metaValueItem) {
         return "metaitems/" + metaValueItem.unlocalizedName.replace('.', '/');
     }
 
@@ -717,4 +994,32 @@ public class GTFOMetaItem extends StandardMetaItem implements IEdible {
             }
         }
     }
+
+    public class GTFOMetaValueItem extends MetaItem<?>.MetaValueItem {
+
+        protected GTFOMetaValueItem(int metaValue, String unlocalizedName) {
+            super(metaValue, unlocalizedName);
+        }
+
+
+        protected void addItemComponentsInternal(IItemComponent... stats) {
+            super.addItemComponentsInternal(stats);
+            for (IItemComponent stat : stats) {
+                if (stat instanceof GTFOFoodStats) {
+                    try {
+                        Class clazz = Class.forName("gregtech.api.items.metaitem.MetaItem$MetaValueItem");
+                        Field field = clazz.getDeclaredField("useManager");
+                        field.setAccessible(true);
+                        field.set(this, new GTFOFoodUseManager((GTFOFoodStats) stat));
+                    } catch (Exception e) {
+                        GTFOLog.logger.error("Failed to add GTFOFoodStats to GTFOMetaValueItem", e);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    }
+
+
 }

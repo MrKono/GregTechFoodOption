@@ -28,11 +28,16 @@ public class GTFOBlockLog extends BlockLog implements IVariantNamed {
         GTFOMetaBlocks.GTFO_LOGS.add(this);
         Blocks.FIRE.setFireInfo(this, 5, 5);
         this.setCreativeTab(GTFOValues.TAB_GTFO);
+        setHarvestLevel("axe", 0);
     }
 
     @Override
     public String getVariantTranslationKey(IBlockState state) {
-        return "gregtechfoodoption.log." + this.getTreeFromState(state).name;
+        try {
+            return "gregtechfoodoption.log." + this.getTreeFromState(state).name;
+        } catch (IndexOutOfBoundsException e) {
+            return "gregtechfoodoption.hello_buildcraft";
+        }
     }
 
     @Override

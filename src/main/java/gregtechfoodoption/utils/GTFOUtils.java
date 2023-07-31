@@ -1,12 +1,19 @@
 package gregtechfoodoption.utils;
 
 import gregtech.api.GTValues;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.items.metaitem.stats.IItemComponent;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.util.RandomPotionEffect;
 import gregtechfoodoption.GTFOValues;
 import gregtechfoodoption.item.GTFOFoodStats;
+import gregtechfoodoption.item.GTFOMetaItems;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -100,14 +107,6 @@ public class GTFOUtils {
 
     public static int boolToInt(boolean boole) {
         return boole ? 1 : 0;
-    }
-
-    public static int average(float divisor, int... inputs) {
-        int result = 0;
-        for (int i : inputs) {
-            result += i;
-        }
-        return (int) (result / divisor);
     }
 
     public static int averageRGB(float divisor, int... inputs) {
@@ -225,7 +224,7 @@ public class GTFOUtils {
             if (!handler.getStackInSlot(i).isEmpty())
                 return i;
         }
-        return 0;
+        return -1;
     }
 
     public static Vec3d getScaledFacingVec(EnumFacing facing, double scale) {
@@ -243,5 +242,55 @@ public class GTFOUtils {
                 return false;
         }
         return true;
+    }
+
+    public static GTFOFoodStats getGTFOFoodStats(ItemStack stack) {
+        if (stack.getItem() instanceof MetaItem<?>) {
+            if (GTFOMetaItems.META_ITEM.getItem(stack) != null) {
+                for (IItemComponent stats : GTFOMetaItems.META_ITEM.getItem(stack).getAllStats()) {
+                    if (stats instanceof GTFOFoodStats) {
+                        return ((GTFOFoodStats) stats);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void drawRect(int left, int top, int right, int bottom, int color)
+    {
+        if (left < right)
+        {
+            int i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom)
+        {
+            int j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.color(f, f1, f2, f3);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
+        bufferbuilder.pos((double)left, (double)bottom, 0.0D).endVertex();
+        bufferbuilder.pos((double)right, (double)bottom, 0.0D).endVertex();
+        bufferbuilder.pos((double)right, (double)top, 0.0D).endVertex();
+        bufferbuilder.pos((double)left, (double)top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 }

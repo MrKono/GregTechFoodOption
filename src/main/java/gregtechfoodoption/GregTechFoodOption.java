@@ -13,6 +13,7 @@ import gregtechfoodoption.machines.GTFOTileEntities;
 import gregtechfoodoption.machines.farmer.FarmerModeRegistry;
 import gregtechfoodoption.network.PacketAppleCoreFoodDivisorUpdate;
 import gregtechfoodoption.utils.GTFOConfigOverrider;
+import gregtechfoodoption.worldgen.GTFODungeonLootLoader;
 import gregtechfoodoption.worldgen.GTFOWorldGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -25,7 +26,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(modid = GregTechFoodOption.MODID, name = GregTechFoodOption.NAME, version = GregTechFoodOption.VERSION,
-        dependencies = "required-after:gregtech@(2.3.4,);" + "after:gcy_science")
+        dependencies = "required-after:gregtech@[2.7.0-beta,);" + "after:gcy_science")
 public class GregTechFoodOption {
     public static final String MODID = "gregtechfoodoption";
     public static final String NAME = "GregTech Food Option";
@@ -80,6 +81,8 @@ public class GregTechFoodOption {
         GTFOCoverBehaviors.init();
         GameRegistry.registerWorldGenerator(GTFOWorldGenerator.INSTANCE, 1);
         GTFOMaterialHandler.registerFertilizerTooltips();
+
+        GTFODungeonLootLoader.init();
     }
 
     @Mod.EventHandler

@@ -2,6 +2,7 @@ package gregtechfoodoption.machines.multiblock;
 
 import gregtech.api.GTValues;
 import gregtech.api.capability.impl.SteamMultiWorkable;
+import gregtech.api.gui.resources.TextureArea;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
@@ -17,11 +18,13 @@ import gregtech.common.blocks.MetaBlocks;
 import gregtechfoodoption.block.GTFOBlockCasing;
 import gregtechfoodoption.block.GTFOMetaBlocks;
 import gregtechfoodoption.client.GTFOClientHandler;
+import gregtechfoodoption.client.GTFOGuiTextures;
 import gregtechfoodoption.recipe.builder.ElectricBakingOvenRecipeBuilder;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -45,11 +48,6 @@ public class MetaTileEntitySteamBakingOven extends RecipeMapSteamMultiblockContr
     @Override
     protected BlockPattern createStructurePattern() {
         return FactoryBlockPattern.start().aisle("XXXX", "XGGX", "XXXX").aisle("XXXX", "GFFG", "XFFX").aisle("XXXX", "GFFG", "XFFX").aisle("XXXX", "YGGX", "XXXX").where('X', states(getCasingState()).or(this.autoAbilities(true, false, true, true, false))).where('F', states(getFrameState())).where('#', air()).where(' ', any()).where('Y', selfPredicate()).where('G', states(getCasingState()).or(states(MetaBlocks.TRANSPARENT_CASING.getState(BlockGlassCasing.CasingType.TEMPERED_GLASS)))).build();
-    }
-
-    @Override
-    public RecipeMap<?> getRecipeMap() {
-        return super.getRecipeMap();
     }
 
     @Override
@@ -106,7 +104,7 @@ public class MetaTileEntitySteamBakingOven extends RecipeMapSteamMultiblockContr
         @Override
         protected void setupRecipe(Recipe recipe) {
             super.setupRecipe(recipe);
-            recipeSteamT = previousRecipe == null ? 0 : this.previousRecipe.getProperty(ElectricBakingOvenRecipeBuilder.TemperatureProperty.getInstance(), 0);
+            recipeSteamT = previousRecipe == null ? 0 : this.previousRecipe.getProperty(ElectricBakingOvenRecipeBuilder.TemperatureProperty.getInstance(), 0) / 100;
         }
 
         @Override
@@ -147,5 +145,20 @@ public class MetaTileEntitySteamBakingOven extends RecipeMapSteamMultiblockContr
             return GTValues.V[4];
         }
 
+    }
+
+    @Override
+    protected @NotNull TextureArea getLogo() {
+        return GTFOGuiTextures.GTFO_LOGO_WORKING;
+    }
+
+    @Override
+    protected @NotNull TextureArea getWarningLogo() {
+        return GTFOGuiTextures.GTFO_LOGO_WARNING;
+    }
+
+    @Override
+    protected @NotNull TextureArea getErrorLogo() {
+        return GTFOGuiTextures.GTFO_LOGO_ERROR;
     }
 }

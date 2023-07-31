@@ -2,15 +2,14 @@ package gregtechfoodoption;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.unification.material.event.MaterialEvent;
 import gregtech.api.util.GregFakePlayer;
 import gregtechfoodoption.entity.EntityStrongSnowman;
 import gregtechfoodoption.integration.GTFOGAMaterialHandler;
 import gregtechfoodoption.integration.applecore.GTFOAppleCoreCompat;
-import gregtechfoodoption.item.GTFOFoodDurationSetter;
+import gregtechfoodoption.item.food.GTFOFoodDurationSetter;
 import gregtechfoodoption.network.PacketAppleCoreFoodDivisorUpdate;
-import gregtechfoodoption.potion.CreativityPotion;
-import gregtechfoodoption.potion.SnowGolemSpawnerPotion;
-import gregtechfoodoption.potion.StepAssistPotion;
+import gregtechfoodoption.potion.*;
 import gregtechfoodoption.utils.GTFODamageSources;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySnowman;
@@ -30,6 +29,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.PotionColorCalculationEvent;
+import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
@@ -52,7 +53,7 @@ public class GTFOEventHandler {
 
 
     @SubscribeEvent
-    public static void onMaterialsInit(GregTechAPI.MaterialEvent event) { // Must be called during construction to be registered in time for MaterialEvents.
+    public static void onMaterialsInit(MaterialEvent event) { // Must be called during construction to be registered in time for MaterialEvents.
         GTFOMaterialHandler gtfoMaterials = new GTFOMaterialHandler();
         GTFOMaterialHandler.onMaterialsInit();
         if (Loader.isModLoaded(GTFOValues.MODID_GCYS)) {
@@ -99,7 +100,7 @@ public class GTFOEventHandler {
                 player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
             }
             if (GTFOConfig.gtfoPotionConfig.creativity) {
-                if (CreativityPotion.instance != null && player.isPotionActive(CreativityPotion.instance)) {
+                if (CreativityPotion.INSTANCE != null && player.isPotionActive(CreativityPotion.INSTANCE)) {
                     if (!persisted.getBoolean(CreativityPotion.TAG_NAME)) {
                         persisted.setBoolean(CreativityPotion.TAG_NAME, true);
                     }
@@ -117,7 +118,7 @@ public class GTFOEventHandler {
                 }
             }
             if (GTFOConfig.gtfoPotionConfig.stepAssist) {
-                if (StepAssistPotion.instance != null && player.isPotionActive(StepAssistPotion.instance)) {
+                if (StepAssistPotion.INSTANCE != null && player.isPotionActive(StepAssistPotion.INSTANCE)) {
                     if (!persisted.getBoolean(StepAssistPotion.TAG_NAME)) {
                         persisted.setBoolean(StepAssistPotion.TAG_NAME, true);
                     }
@@ -130,11 +131,11 @@ public class GTFOEventHandler {
                 }
             }
             if (GTFOConfig.gtfoPotionConfig.snowGolemSpawner) {
-                if (SnowGolemSpawnerPotion.instance != null && player.isPotionActive(SnowGolemSpawnerPotion.instance)) {
+                if (SnowGolemSpawnerPotion.INSTANCE != null && player.isPotionActive(SnowGolemSpawnerPotion.INSTANCE)) {
                     if (!persisted.getBoolean(SnowGolemSpawnerPotion.TAG_NAME)) {
                         persisted.setBoolean(SnowGolemSpawnerPotion.TAG_NAME, true);
                     } else {
-                        if (!player.world.isRemote && GTFOValues.rand.nextInt(100 / (player.getActivePotionEffect(SnowGolemSpawnerPotion.instance).getAmplifier() + 1)) == 0) {
+                        if (!player.world.isRemote && GTFOValues.rand.nextInt(100 / (player.getActivePotionEffect(SnowGolemSpawnerPotion.INSTANCE).getAmplifier() + 1)) == 0) {
                             float angle = (float) (GTFOValues.rand.nextFloat() * Math.PI);
 
                             RayTraceResult result = player.world.rayTraceBlocks(player.getPositionVector(), new Vec3d(1, -0.3, 0).rotateYaw(angle), false, false, true);
@@ -164,6 +165,7 @@ public class GTFOEventHandler {
 
     @SubscribeEvent
     public static void onLivingUpdate(LivingEntityUseItemEvent.Tick event) {
+
         if (event.getItem().getItem() instanceof ItemFood || event.getItem().getItem() instanceof MetaItem<?>) {
             EntityLivingBase livingBase = event.getEntityLiving();
             ItemStack stack = event.getItem();
@@ -186,6 +188,8 @@ public class GTFOEventHandler {
                     }
 
                     livingBase.playSound(SoundEvents.ENTITY_GENERIC_EAT, 0.5F + 0.5F * (float) rand.nextInt(2), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
+                } else if (stack.getItemUseAction() == EnumAction.DRINK) {
+                    livingBase.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 0.5F, livingBase.world.rand.nextFloat() * 0.1F + 0.9F);
                 }
             }
         }
@@ -202,8 +206,7 @@ public class GTFOEventHandler {
             }
         }
     }
-
-
+    
     @SubscribeEvent
     public static void onPlayerLoginEvent(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.player.getEntityWorld().isRemote && Loader.isModLoaded(GTFOValues.MODID_AP)) {
@@ -217,5 +220,27 @@ public class GTFOEventHandler {
     public static void onWorldLoadEvent(WorldEvent.Load event) {
         if (!event.getWorld().isRemote)
             GTFODamageSources.EXTERMINATOR = GregFakePlayer.get((WorldServer) event.getWorld());
+    }
+
+    @SubscribeEvent
+    public static void getPotionParticleColor(PotionColorCalculationEvent event) {
+        if (event.getEffects().stream().anyMatch(effect -> effect.getPotion() instanceof CyanidePoisoningPotion))
+            event.shouldHideParticles(true);
+    }
+
+    @SubscribeEvent
+    public static void onDrinkPotion(PotionEvent.PotionAddedEvent event) {
+        if (PotionAmplifierPotion.INSTANCE != null && event.getEntityLiving().isPotionActive(PotionAmplifierPotion.INSTANCE) && !event.getPotionEffect().getPotion().equals(PotionAmplifierPotion.INSTANCE)) {
+            int amplificationBonus = event.getEntityLiving().getActivePotionEffect(PotionAmplifierPotion.INSTANCE).getAmplifier() + 1;
+            Potion type = event.getPotionEffect().getPotion();
+            int newAmplifier = event.getPotionEffect().getAmplifier() + amplificationBonus;
+            event.getPotionEffect().combine(new PotionEffect(type, 0, newAmplifier));
+        }
+        if (PotionLengthenerPotion.INSTANCE != null && event.getEntityLiving().isPotionActive(PotionLengthenerPotion.INSTANCE) && !event.getPotionEffect().getPotion().equals(PotionLengthenerPotion.INSTANCE)) {
+            int durationBonus = event.getEntityLiving().getActivePotionEffect(PotionLengthenerPotion.INSTANCE).getAmplifier();
+            Potion type = event.getPotionEffect().getPotion();
+            int newDuration = (int) (event.getPotionEffect().getAmplifier() * ((durationBonus * 0.5) + 1.5));
+            event.getPotionEffect().combine(new PotionEffect(type, newDuration));
+        }
     }
 }

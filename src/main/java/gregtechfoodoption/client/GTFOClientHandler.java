@@ -7,18 +7,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import static gregtech.client.renderer.texture.cube.OrientedOverlayRenderer.OverlayFace.*;
-
 public class GTFOClientHandler {
-    public static OrientedOverlayRenderer SLICER_OVERLAY = new OrientedOverlayRenderer("machines/slicer", FRONT, TOP);
-    public static OrientedOverlayRenderer BAKING_OVEN_OVERLAY = new OrientedOverlayRenderer("machines/baking_oven", FRONT);
-    public static OrientedOverlayRenderer CUISINE_ASSEMBLER_OVERLAY = new OrientedOverlayRenderer("machines/cuisine_assembler", FRONT, TOP);
-    public static OrientedOverlayRenderer MICROWAVE_OVERLAY = new OrientedOverlayRenderer("machines/microwave", FRONT);
-    public static final OrientedOverlayRenderer MOB_AGE_SORTER_OVERLAY = new OrientedOverlayRenderer("machines/mob_age_sorter", FRONT, BACK);
-    public static final OrientedOverlayRenderer MOB_EXTERMINATOR_OVERLAY = new OrientedOverlayRenderer("machines/mob_exterminator", FRONT, TOP);
-    public static final OrientedOverlayRenderer MOB_EXTRACTOR_OVERLAY = new OrientedOverlayRenderer("machines/mob_extractor", FRONT, TOP);
-    public static final OrientedOverlayRenderer FARMER_OVERLAY = new OrientedOverlayRenderer("machines/farmer", FRONT);
-    public static final OrientedOverlayRenderer SPRINKLER_OVERLAY = new OrientedOverlayRenderer("machines/sprinkler", FRONT);
+    public static OrientedOverlayRenderer SLICER_OVERLAY = new OrientedOverlayRenderer("machines/slicer");
+    public static OrientedOverlayRenderer BAKING_OVEN_OVERLAY = new OrientedOverlayRenderer("machines/baking_oven");
+    public static OrientedOverlayRenderer CUISINE_ASSEMBLER_OVERLAY = new OrientedOverlayRenderer("machines/cuisine_assembler");
+    public static OrientedOverlayRenderer MICROWAVE_OVERLAY = new OrientedOverlayRenderer("machines/microwave");
+    public static OrientedOverlayRenderer MULTICOOKER_OVERLAY = new OrientedOverlayRenderer("machines/multicooker");
+    public static final OrientedOverlayRenderer MOB_AGE_SORTER_OVERLAY = new OrientedOverlayRenderer("machines/mob_age_sorter");
+    public static final OrientedOverlayRenderer MOB_EXTERMINATOR_OVERLAY = new OrientedOverlayRenderer("machines/mob_exterminator");
+    public static final OrientedOverlayRenderer MOB_EXTRACTOR_OVERLAY = new OrientedOverlayRenderer("machines/mob_extractor");
+    public static final OrientedOverlayRenderer FARMER_OVERLAY = new OrientedOverlayRenderer("machines/farmer");
+    public static final OrientedOverlayRenderer SPRINKLER_OVERLAY = new OrientedOverlayRenderer("machines/sprinkler");
 
 
     public static SimpleOverlayRenderer ADOBE_BRICKS = new SimpleOverlayRenderer("casings/solid/adobe_bricks");
@@ -27,10 +26,12 @@ public class GTFOClientHandler {
 
     public static SoundEvent MICROWAVE_FINISH;
     public static SoundEvent FARMER_LASER;
+    public static SoundEvent AMOGUS_VENT;
 
     public static void registerSounds() {
         MICROWAVE_FINISH = registerSound("microwave.finish");
         FARMER_LASER = registerSound("farmer.laser");
+        AMOGUS_VENT = registerSound("amogus.vent");
     }
 
     private static SoundEvent registerSound(String soundNameIn) {
